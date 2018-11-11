@@ -14,5 +14,7 @@ $app->get('/hello/{name}', function (Request $request, Response $response, array
 });
 
 require '../src/routes/customers.php';
+require '../src/routes/administrators.php';
+require '../src/routes/hotels.php';
 
 $app->run();
