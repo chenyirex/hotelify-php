@@ -37,6 +37,8 @@ $app->get('/api/hotels/{id}', function (Request $request, Response $response, ar
         $response->write(json_encode($hotel));
         return $response->withStatus(200);
     } catch (PDOException $e) {
+        $db = null;
+        
         $response->write($e);
         return $response->withStatus(500);
     }
@@ -62,6 +64,8 @@ $app->get('/api/hotels', function (Request $request, Response $response) {
         $response->write(json_encode($hotels));
         return $response->withStatus(200);
     } catch (PDOException $e) {
+        $db = null;
+
         $response->write($e);
         return $response->withStatus(500);
     }
@@ -230,8 +234,7 @@ $app->delete('/api/hotels/delete/{id}', function (Request $request, Response $re
         $db->rollBack();
         $db = null;
 
-        $response->write('{"error": {"text": "failed delete on Hotel"}}');
-        return $response->withStatus(500);
+        return $response->write($e)->withStatus(500);
     }
 });
 
