@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 12, 2018 at 12:33 AM
+-- Generation Time: Nov 12, 2018 at 06:19 AM
 -- Server version: 10.1.36-MariaDB
 -- PHP Version: 7.2.11
 
@@ -34,18 +34,17 @@ CREATE TABLE `address` (
   `province` char(20) NOT NULL,
   `city` char(20) NOT NULL,
   `street` char(255) NOT NULL,
-  `postal_code` char(20) NOT NULL,
-  `phone_number` char(15) DEFAULT NULL
+  `postal_code` char(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `address`
 --
 
-INSERT INTO `address` (`id`, `country`, `province`, `city`, `street`, `postal_code`, `phone_number`) VALUES
-(1, 'Canada', 'British Columbia', 'Vancouver', '123 any street', 'V6S 0G3', '7777777777'),
-(2, 'United States', 'California', 'Irvine', '123 any street', '92602', '5555551234'),
-(3, 'Canada', 'British Columbia', 'Vancouver', '5959 Student Union Blvd', 'V6T 1K2', '6048221020');
+INSERT INTO `address` (`id`, `country`, `province`, `city`, `street`, `postal_code`) VALUES
+(1, 'Canada', 'British Columbia', 'Vancouver', '123 any street', 'V6S 0G3'),
+(2, 'United States', 'California', 'Irvine', '123 any street', '92602'),
+(3, 'Canada', 'British Columbia', 'Vancouver', '5959 Student Union Blvd', 'V6T 1K2');
 
 -- --------------------------------------------------------
 
@@ -138,15 +137,16 @@ CREATE TABLE `hotel` (
   `property_class` int(11) DEFAULT NULL,
   `address_id` int(11) NOT NULL,
   `description` char(255) DEFAULT NULL,
-  `overall_rating` char(50) DEFAULT NULL
+  `overall_rating` char(50) DEFAULT NULL,
+  `phone_number` char(15) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `hotel`
 --
 
-INSERT INTO `hotel` (`id`, `brand_name`, `branch_name`, `property_class`, `address_id`, `description`, `overall_rating`) VALUES
-(1, 'Walter Gage', 'UBC', 1, 3, 'this is a good one', NULL);
+INSERT INTO `hotel` (`id`, `brand_name`, `branch_name`, `property_class`, `address_id`, `description`, `overall_rating`, `phone_number`) VALUES
+(1, 'Walter Gage', 'UBC', 1, 3, 'this is a good one', NULL, '6048221020');
 
 -- --------------------------------------------------------
 
