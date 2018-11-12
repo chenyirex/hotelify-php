@@ -10,7 +10,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 $address_columns = 'a.id as address_id, a.country, a.province, a.city, a.postal_code, a.street';
-$hotel_columns = 'h.id as hotel_id, h.brand_name, h.branch_name, h.property_class, h.description';
+$hotel_columns = 'h.id as id, h.brand_name, h.branch_name, h.property_class, h.description, h.phone_number';
 
 // Get All hotels
 $app->get('/api/hotels', function (Request $request, Response $response) {
@@ -46,15 +46,18 @@ $app->get('/api/hotels/search', function (Request $request, Response $response) 
         $sql = "SELECT $hotel_columns, $address_columns " .
             "FROM hotel h, address a " .
             "WHERE h.brand_name = '$brandName' " .
-            "AND h.branch_name = '$branchName' ";
+            "AND h.branch_name = '$branchName' " .
+            "AND h.address_id = a.id ";
     } else if ($branchName && !$brandName) {
         $sql = "SELECT $hotel_columns, $address_columns " .
             "FROM hotel h, address a " .
-            "WHERE h.branch_name = '$branchName' ";
+            "WHERE h.branch_name = '$branchName' " .
+            "AND h.address_id = a.id ";
     } else if (!$branchName && $brandName) {
         $sql = "SELECT $hotel_columns, $address_columns " .
             "FROM hotel h, address a " .
-            "WHERE h.brand_name = '$brandName' ";
+            "WHERE h.brand_name = '$brandName' " .
+            "AND h.address_id = a.id ";
     } else {
         // no params, bad request
         return $response->withStatus(400);
