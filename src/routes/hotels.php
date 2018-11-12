@@ -74,6 +74,4 @@ $app->get('/api/hotels/search', function (Request $request, Response $response) 
         $response->write($e);
         return $response->withStatus(500);
     }
-    echo json_encode($brandName);
-
 });
