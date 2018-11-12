@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 12, 2018 at 10:26 AM
+-- Generation Time: Nov 13, 2018 at 12:41 AM
 -- Server version: 10.1.36-MariaDB
 -- PHP Version: 7.2.11
 
@@ -229,6 +229,40 @@ CREATE TABLE `review` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `room`
+--
+
+CREATE TABLE `room` (
+  `id` int(11) NOT NULL,
+  `hotel_id` int(11) NOT NULL,
+  `room_type_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `room`
+--
+
+INSERT INTO `room` (`id`, `hotel_id`, `room_type_id`) VALUES
+(19, 1, 35),
+(20, 1, 36),
+(21, 1, 36),
+(22, 1, 37),
+(23, 1, 37),
+(24, 1, 37),
+(25, 1, 38),
+(26, 1, 38),
+(27, 1, 38),
+(28, 1, 38),
+(29, 1, 39),
+(30, 1, 39),
+(31, 1, 39),
+(32, 1, 39),
+(33, 1, 39),
+(34, 1, 40);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `room_type`
 --
 
@@ -238,8 +272,6 @@ CREATE TABLE `room_type` (
   `occupancy` int(11) NOT NULL,
   `description` char(255) DEFAULT NULL,
   `price` int(11) NOT NULL,
-  `available_slots` int(11) NOT NULL,
-  `hotel_id` int(11) NOT NULL,
   `total_slots` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -247,9 +279,13 @@ CREATE TABLE `room_type` (
 -- Dumping data for table `room_type`
 --
 
-INSERT INTO `room_type` (`id`, `type_name`, `occupancy`, `description`, `price`, `available_slots`, `hotel_id`, `total_slots`) VALUES
-(1, 'Big bedroom', 3, 'the bedroom that is big', 300, 5, 1, 5),
-(3, 'medium room', 1, 'this room is really small', 100, 10, 1, 20);
+INSERT INTO `room_type` (`id`, `type_name`, `occupancy`, `description`, `price`, `total_slots`) VALUES
+(35, 'rex room', 3, 'this room is for rex', 100, 1),
+(36, 'haus room', 3, 'this room is for haus', 100, 2),
+(37, 'scott room', 3, 'this room is for scott', 100, 3),
+(38, 'kanglong room', 3, 'this room is for kanglong', 100, 4),
+(39, 'general room', 2, 'this room for general use', 100, 5),
+(40, 'emergency room', 2, 'this room for emergency use', 100, 1);
 
 -- --------------------------------------------------------
 
@@ -365,12 +401,19 @@ ALTER TABLE `review`
   ADD KEY `hotel_id` (`hotel_id`);
 
 --
+-- Indexes for table `room`
+--
+ALTER TABLE `room`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `hotel_id` (`hotel_id`),
+  ADD KEY `room_type_id` (`room_type_id`) USING BTREE;
+
+--
 -- Indexes for table `room_type`
 --
 ALTER TABLE `room_type`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id` (`id`),
-  ADD KEY `hotel_id` (`hotel_id`);
+  ADD UNIQUE KEY `id` (`id`);
 
 --
 -- Indexes for table `tag`
@@ -432,10 +475,16 @@ ALTER TABLE `review`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `room`
+--
+ALTER TABLE `room`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
 -- AUTO_INCREMENT for table `room_type`
 --
 ALTER TABLE `room_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- Constraints for dumped tables
@@ -504,10 +553,11 @@ ALTER TABLE `review`
   ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`hotel_id`) REFERENCES `hotel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `room_type`
+-- Constraints for table `room`
 --
-ALTER TABLE `room_type`
-  ADD CONSTRAINT `room_type_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hotel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `room`
+  ADD CONSTRAINT `room_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hotel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `room_ibfk_2` FOREIGN KEY (`room_type_id`) REFERENCES `room_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
