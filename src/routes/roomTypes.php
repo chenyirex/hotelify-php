@@ -21,10 +21,10 @@ $app->get('/api/hotels/{id}/room-types', function (Request $request, Response $r
         // Connect
         $db = $db->connect();
         $stmt = $db->query($sql);
-        $customers = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $roomTypes = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
 
-        return $response->write(json_encode($customers));
+        return $response->write(json_encode($roomTypes));
     } catch (PDOException $e) {
 
         $db = null;
@@ -39,7 +39,7 @@ $app->post('/api/hotels/{id}/room-types', function (Request $request, Response $
 
     $hotel_id = $args['id'];
 
-    $sql = "INSERT INTO `room_type` (`id`, `type_name`, `occupancy`, `description`, `price`, `available_slots`, `hotel_id`, `total_slots`)" .
+    $sql = "INSERT INTO room_type (`id`, `type_name`, `occupancy`, `description`, `price`, `available_slots`, `hotel_id`, `total_slots`)" .
         " VALUES (NULL, :type_name, :occupancy, :description, :price, :slots, :hotel_id, :slots);";
 
     $parsedBody = $request->getParsedBody();
