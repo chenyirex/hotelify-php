@@ -38,7 +38,7 @@ $app->get('/api/hotels/{id}', function (Request $request, Response $response, ar
         return $response->withStatus(200);
     } catch (PDOException $e) {
         $db = null;
-        
+
         $response->write($e);
         return $response->withStatus(500);
     }
@@ -120,17 +120,14 @@ $app->post('/api/hotels/create', function (Request $request, Response $response)
 
                 return $response->write(json_encode($responseArray))->withStatus(200);
             } else {
-                $db = null;
-
                 $response->write('{"error": {"text": "failed create on hotel"}}');
-                return $response->withStatus(500);
             }
         } else {
-            $db = null;
-
             $response->write('{"error": {"text": "failed create on address"}}');
-            return $response->withStatus(500);
         }
+        
+        $db = null;
+        return $response->withStatus(500);
     } catch (PDOException $e) {
         $db->rollBack();
         $db = null;
