@@ -44,9 +44,6 @@ $app->get('/api/hotels/{id}', function (Request $request, Response $response, ar
     }
 });
 
-$address_columns = 'a.id as address_id, a.country, a.province, a.city, a.postal_code, a.street';
-$hotel_columns = 'h.id as id, h.brand_name, h.branch_name, h.property_class, h.description, h.phone_number';
-
 // Get All hotels
 $app->get('/api/hotels', function (Request $request, Response $response) {
 
@@ -239,7 +236,7 @@ $app->delete('/api/hotels/delete/{id}', function (Request $request, Response $re
 });
 
 // search hotels by branch name and brand name
-$app->get('/api/hotels/search', function (Request $request, Response $response) {
+$app->get('/api/hotels/feature/search', function (Request $request, Response $response) {
 
     $brandName = $request->getParam('brandName');
     $branchName = $request->getParam('branchName');
