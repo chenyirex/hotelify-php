@@ -81,6 +81,8 @@ $app->post('/api/hotels/{id}/room-types', function (Request $request, Response $
             }
         }
         $db->commit();
+
+        return $response->write(json_encode(['id'=>$room_type_id]));
     }catch (Exception $e){
 
         $db->rollback();
