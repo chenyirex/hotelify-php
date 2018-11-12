@@ -14,7 +14,9 @@ $app->get('/api/hotels/{id}/room-types', function (Request $request, Response $r
 
     $hotel_id = $args['id'];
 
-    $sql = "SELECT * FROM room_type where hotel_id = '$hotel_id' ";
+    $sql = "SELECT * FROM room_type rt " .
+        "WHERE EXISTS " .
+        "( select * from room r where rt.id = r.room_type_id and r.hotel_id = '$hotel_id')";
     try {
         // Get DB Object
         $db = new db();
@@ -34,36 +36,32 @@ $app->get('/api/hotels/{id}/room-types', function (Request $request, Response $r
     }
 });
 
-// create a room type to a hotel
+// create a room type to a hotel, create all the rooms as well
 $app->post('/api/hotels/{id}/room-types', function (Request $request, Response $response, array $args) {
 
-    $hotel_id = $args['id'];
-
-    $sql = "INSERT INTO room_type (`id`, `type_name`, `occupancy`, `description`, `price`, `available_slots`, `hotel_id`, `total_slots`)" .
-        " VALUES (NULL, :type_name, :occupancy, :description, :price, :slots, :hotel_id, :slots);";
-
     $parsedBody = $request->getParsedBody();
+    $hotel_id = $args['id'];
 
     $db = new db();
     $db = $db->connect();
 
+    $db->beginTransaction();
+    // First create the room type
     try {
+        $sql = "INSERT INTO room_type (`id`, `type_name`, `occupancy`, `description`, `price`, `total_slots`)" .
+            " VALUES (NULL, :type_name, :occupancy, :description, :price, :slots);";
+
         $stmt = $db->prepare($sql);
         $stmt->bindParam(":type_name", $parsedBody["type_name"]);
         $stmt->bindParam(":occupancy", $parsedBody["occupancy"]);
         $stmt->bindParam(":description", $parsedBody["description"]);
         $stmt->bindParam(":price", $parsedBody["price"]);
         $stmt->bindParam(":slots", $parsedBody["slots"]);
-        $stmt->bindParam(":hotel_id", $hotel_id);
 
         if ($stmt->execute()) {
-            $insertedId = $db->lastInsertId();
-
-            $db = null;
-
-            $responseArray = array();
-            $responseArray["id"] = $insertedId;
-            return $response->write(json_encode($responseArray))->withStatus(200);
+            $room_type_id = $db->lastInsertId();
+        } else {
+            return $response->write(['error'=>'could not create the room type'])->withStatus(500);
         }
     } catch (PDOException $e) {
 
@@ -71,6 +69,23 @@ $app->post('/api/hotels/{id}/room-types', function (Request $request, Response $
 
         $response->write($e);
         return $response->withStatus(500);
+    }
+
+    // create the room
+    $stmt = $db->prepare("INSERT INTO room (`id`, `hotel_id`, `room_type_id`) VALUES (?,?,?)");
+    try {
+        for ($i = 0; $i < $parsedBody["slots"]; $i++)
+        {
+            if(!$stmt->execute([null, $hotel_id, $room_type_id])) {
+                return $response->write(json_encode(['error'=>'could not create the room']))->withStatus(500);
+            }
+        }
+        $db->commit();
+    }catch (Exception $e){
+
+        $db->rollback();
+
+        return $response->write($e)->withStatus(500);
     }
 });
 
@@ -86,8 +101,6 @@ $app->put('/api/room-types/{id}', function (Request $request, Response $response
             occupancy = :occupancy,
             description = :description,
             price = :price,
-            available_slots = :available_slots,
-            hotel_id = :hotel_id,
             total_slots = :total_slots
          WHERE id = '$id' ";
     $db = new db();
@@ -100,19 +113,17 @@ $app->put('/api/room-types/{id}', function (Request $request, Response $response
         $stmt->bindParam(":occupancy", $parsedBody["occupancy"]);
         $stmt->bindParam(":description", $parsedBody["description"]);
         $stmt->bindParam(":price", $parsedBody["price"]);
-        $stmt->bindParam(":available_slots", $parsedBody["available_slots"]);
-        $stmt->bindParam(":hotel_id", $parsedBody["hotel_id"]);
         $stmt->bindParam("total_slots", $parsedBody["total_slots"]);
         if ($stmt->execute()) {
             $db = null;
-            return $response->withStatus(200);
+            return $response->write(json_encode(['id'=>$id]))->withStatus(200);
         } else {
             $db = null;
-            $response->write('{"error": {"text": "failed update the room-type"}}');
+            $response->write(json_encode(['error'=>'Fail to update the room type']));
             return $response->withStatus(500);
         }
     } catch (PDOException $e) {
-        $db->rollBack();
+
         $db = null;
         $response->write($e);
         return $response->withStatus(500);
@@ -136,7 +147,7 @@ $app->delete('/api/room-types/{id}', function (Request $request, Response $respo
             return $response->withStatus(200);
         } else {
             $db = null;
-            return $response->write('{"error": {"text": "No hotel found for id = ' . $id . '"}}')->withStatus(404);
+            return $response->write(json_decode(['error'=>'no room type with given id found']))->withStatus(404);
         }
     } catch (PDOException $e) {
         $db->rollBack();
