@@ -36,18 +36,18 @@ $app->get('/api/hotels/search', function (Request $request, Response $response) 
     $brandName = $request->getParam('brandName');
     $branchName = $request->getParam('branchName');
 
-    if($brandName && $branchName) {
-        $sql = "SELECT h.id as hotel_id, a.id as address_id, h.*, a.* ".
-            "FROM hotel h, address a ".
-            "WHERE h.brand_name = '$brandName' ".
+    if ($brandName && $branchName) {
+        $sql = "SELECT h.id as hotel_id, a.id as address_id, h.*, a.* " .
+            "FROM hotel h, address a " .
+            "WHERE h.brand_name = '$brandName' " .
             "AND h.branch_name = '$branchName' ";
-    } else if($branchName && !$brandName){
-        $sql = "SELECT h.id as hotel_id, a.id as address_id, h.*, a.* ".
-            "FROM hotel h, address a ".
+    } else if ($branchName && !$brandName) {
+        $sql = "SELECT h.id as hotel_id, a.id as address_id, h.*, a.* " .
+            "FROM hotel h, address a " .
             "WHERE h.branch_name = '$branchName' ";
-    } else if(!$branchName && $brandName) {
-        $sql = "SELECT h.id as hotel_id, a.id as address_id, h.*, a.* ".
-            "FROM hotel h, address a ".
+    } else if (!$branchName && $brandName) {
+        $sql = "SELECT h.id as hotel_id, a.id as address_id, h.*, a.* " .
+            "FROM hotel h, address a " .
             "WHERE h.brand_name = '$brandName' ";
     } else {
         // no params, bad request
