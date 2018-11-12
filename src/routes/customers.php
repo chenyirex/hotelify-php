@@ -24,6 +24,31 @@ $app->get('/api/customers', function (Request $request, Response $response) {
     }
 });
 
+// Get Customer By Username
+$app->get('/api/customers/{username}', function (Request $request, Response $response, array $args) {
+    $username = $args['username'];
+    $sql = "SELECT * FROM customers WHERE username = :username";
+
+    try {
+        // Get DB Object
+        $db = new db();
+
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        $customer = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+
+        $response->write(json_encode($customer));
+        return $response->withStatus(200);
+    } catch (PDOException $e) {
+        $db = null;
+        $response->write($e);
+        return $response->withStatus(500);
+    }
+});
+
 // Login for customers
 $app->post('/api/customers/login', function (Request $request, Response $response) {
 
