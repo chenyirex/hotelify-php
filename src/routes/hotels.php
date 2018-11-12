@@ -27,14 +27,14 @@ $app->get('/api/hotels/{id}', function (Request $request, Response $response, ar
         $db = $db->connect();
         $stmt = $db->query($query);
 
-        $hotels = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $hotel = $stmt->fetch(PDO::FETCH_OBJ);
         $db = null;
 
-        if (empty($hotels)) {
+        if (empty($hotel)) {
             return $response->write('{"error": {"text": "No hotel found for id = ' . $id . '"}}')->withStatus(404);
         }
 
-        $response->write(json_encode($hotels));
+        $response->write(json_encode($hotel));
         return $response->withStatus(200);
     } catch (PDOException $e) {
         $response->write($e);
@@ -67,7 +67,7 @@ $app->get('/api/hotels', function (Request $request, Response $response) {
     }
 });
 
-$app->post('/api/hotels/add', function (Request $request, Response $response) {
+$app->post('/api/hotels/create', function (Request $request, Response $response) {
 
     $parsedBody = $request->getParsedBody();
 
@@ -125,12 +125,6 @@ $app->post('/api/hotels/add', function (Request $request, Response $response) {
             return $response->withStatus(500);
         }
     } catch (PDOException $e) {
-        $db->rollBack();
-        $db = null;
-
-        $response->write($e);
-        return $response->withStatus(500);
-    } catch (Exception $e) {
         $db->rollBack();
         $db = null;
 
