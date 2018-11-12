@@ -121,3 +121,41 @@ $app->post('/api/customers/signup', function(Request $request, Response $respons
         return $response->withStatus(500);
     }
 });
+//update by username
+$app->put('/api/customers/update', function (Request $request, Response $response) {
+    $first_name = $request->getParam('first_name');
+    $last_name = $request->getParam('last_name');
+    $username = $request->getParam('username');
+    $password = $request->getParam('password');
+    $email = $request->getParam('email');
+    $phone = $request->getParam('phone');
+    $address_id = $request->getParam('address_id');
+    $points = $request->getParam('points');
+    $sql = "UPDATE customers
+         SET first_name = :first_name, last_name = :last_name,  password = :password, phone = :phone,
+              email = :email, address_id = :address_id, points = :points
+         WHERE username = :username";
+    try {
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':first_name', $first_name);
+        $stmt->bindParam(':last_name',  $last_name);
+        $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':phone',  $phone);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':points', $points);
+        $stmt->bindParam(':address_id', $address_id);
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        $db = null;
+        return $response->withStatus(200);
+    } catch (PDOException $e) {
+        $db->rollBack();
+        $db = null;
+        $response->write('{"error": {"text": "failed update on Hotel"}}');
+        return $response->withStatus(500);
+    }
+});
