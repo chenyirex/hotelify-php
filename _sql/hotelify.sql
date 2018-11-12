@@ -96,7 +96,7 @@ CREATE TABLE `coupon` (
 CREATE TABLE `coupon_type` (
   `id` int(11) NOT NULL,
   `value` int(11) NOT NULL,
-  `discount_type` char(4) NOT NULL
+  `discount_type` char(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
