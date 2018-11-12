@@ -27,9 +27,7 @@ $app->get('/api/customers', function (Request $request, Response $response) {
 // Login for customers
 $app->post('/api/customers/login', function (Request $request, Response $response) {
 
-    $parsedBody = $request->getParsedBody();
-
-    $username = $parsedBody['username'];
+    $username = $request->getParam('username');
     $password = $request->getParam('password');
 
     $sql = "SELECT * FROM customers where username = '$username'";
