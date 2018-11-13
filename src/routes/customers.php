@@ -19,8 +19,8 @@ $app->get('/api/customers', function (Request $request, Response $response) {
         return $response->withStatus(200);
     } catch (PDOException $e) {
         $db = null;
-        $response->write($e);
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error'=>''.$errorMessage]))->withStatus(500);
     }
 });
 
@@ -39,13 +39,15 @@ $app->get('/api/customers/{username}', function (Request $request, Response $res
         $stmt->execute();
         $customer = $stmt->fetch(PDO::FETCH_OBJ);
         $db = null;
-
+        if (empty($customer)) {
+            return $response->write(json_encode(['error'=>'No user found for '. $username ]))->withStatus(404);
+        }
         $response->write(json_encode($customer));
         return $response->withStatus(200);
     } catch (PDOException $e) {
         $db = null;
-        $response->write($e);
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error'=>''.$errorMessage]))->withStatus(500);
     }
 });
 
@@ -68,7 +70,7 @@ $app->post('/api/customers/login', function (Request $request, Response $respons
         $db = null;
 
         if (!$customer) {
-            return $response->write('no admin found')->withStatus(404);
+            return $response->write(json_encode(['error'=>'No customer found']))->withStatus(404);
         }
 
         if ($customer->password == $password) {
@@ -78,14 +80,12 @@ $app->post('/api/customers/login', function (Request $request, Response $respons
             return $response->write(json_encode($responseArray));
             return $response->withStatus(200);
         } else {
-            //FAILED
-            return $response->write('wrong credential')->withStatus(409);
+            return $response->write(json_encode(['error'=>'Wrong credential']))->withStatus(401);
         }
     } catch (PDOException $e) {
-        $db->rollBack();
         $db = null;
-        $response->write($e);
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error'=>''.$errorMessage]))->withStatus(500);
     }
 });
 
@@ -111,14 +111,20 @@ $app->post('/api/customers/signup', function(Request $request, Response $respons
         $stmt->bindParam(':password',  $password);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':phone',  $phone);
-        $stmt->execute();
-        $db = null;
-        $response->write('{"notice": {"text": "Customers Added"}}');
-        return $response->withStatus(200);
+        if($stmt->execute()){
+            $db = null;
+            $responseArray = array();
+            $responseArray["id"] = $username;
+            return $response->write(json_encode($responseArray))->withStatus(200);
+        }
+        else{
+            $db = null;
+            return $response->write(json_encode(['error'=>'fail to create new customer']))->withStatus(500);
+        }
     } catch(PDOException $e){
         $db = null;
-        $response->write('{"error": {"text": '.$e->getMessage().'}}');
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error'=>''.$errorMessage]))->withStatus(500);
     }
 });
 //update by username
@@ -151,11 +157,12 @@ $app->put('/api/customers/update', function (Request $request, Response $respons
         $stmt->bindParam(':username', $username);
         $stmt->execute();
         $db = null;
-        return $response->withStatus(200);
+        $responseArray = array();
+        $responseArray["id"] = $username;
+        return $response->write(json_encode($responseArray))->withStatus(200);
     } catch (PDOException $e) {
-        $db->rollBack();
         $db = null;
-        $response->write('{"error": {"text": "failed update on Hotel"}}');
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error'=>''.$errorMessage]))->withStatus(500);
     }
 });
