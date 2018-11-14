@@ -35,7 +35,8 @@ $app->get('/api/reviews/hotel/{hotel_id}', function (Request $request, Response 
 // Get All reviews by customer
 $app->get('/api/reviews/username/{username}', function (Request $request, Response $response, array $args) {
     $username = $args['username'];
-    $sql = "SELECT * FROM review WHERE username = :username";
+    $sql = "SELECT r.id, r.username, r.rating, r.comment, r.hotel_id, h.brand_name, h.branch_name " .
+        " FROM review r, hotel h WHERE username = :username AND h.id = r.hotel_id ORDER BY h.branch_name";
     try {
         // Get DB Object
         $db = new db();
