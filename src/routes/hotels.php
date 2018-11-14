@@ -39,8 +39,8 @@ $app->get('/api/hotels/{id}', function (Request $request, Response $response, ar
     } catch (PDOException $e) {
         $db = null;
 
-        $response->write($e);
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
@@ -66,8 +66,8 @@ $app->get('/api/hotels', function (Request $request, Response $response) {
     } catch (PDOException $e) {
         $db = null;
 
-        $response->write($e);
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
@@ -122,15 +122,15 @@ $app->post('/api/hotels/create', function (Request $request, Response $response)
         } else {
             $response->write('{"error": {"text": "failed create on address"}}');
         }
-        
+
         $db = null;
         return $response->withStatus(500);
     } catch (PDOException $e) {
         $db->rollBack();
         $db = null;
 
-        $response->write($e);
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
@@ -181,8 +181,8 @@ $app->put('/api/hotels/update', function (Request $request, Response $response) 
         $db->rollBack();
         $db = null;
 
-        $response->write($e);
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 
 });
@@ -231,7 +231,8 @@ $app->delete('/api/hotels/delete/{id}', function (Request $request, Response $re
         $db->rollBack();
         $db = null;
 
-        return $response->write($e)->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
@@ -276,7 +277,9 @@ $app->get('/api/hotels/feature/search', function (Request $request, Response $re
         $response->write(json_encode($hotels));
         return $response->withStatus(200);
     } catch (PDOException $e) {
-        $response->write($e);
-        return $response->withStatus(500);
+        $db = null;
+
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });

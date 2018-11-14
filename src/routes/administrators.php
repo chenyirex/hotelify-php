@@ -6,8 +6,8 @@
  * Time: 11:43 PM
  */
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 // Get All administrators
 $app->get('/api/administrators', function (Request $request, Response $response) {
@@ -25,8 +25,10 @@ $app->get('/api/administrators', function (Request $request, Response $response)
         $response->write(json_encode($administrators));
         return $response->withStatus(200);
     } catch (PDOException $e) {
-        $response->write($e);
-        return $response->withStatus(500);
+        $db = null;
+
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
@@ -64,7 +66,9 @@ $app->post('/api/administrators/login', function (Request $request, Response $re
             return $response->write('wrong credential')->withStatus(409);
         }
     } catch (PDOException $e) {
-        $response->write($e);
-        return $response->withStatus(500);
+        $db = null;
+
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });

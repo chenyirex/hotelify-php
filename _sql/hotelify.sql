@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 13, 2018 at 12:41 AM
+-- Generation Time: Nov 13, 2018 at 05:33 AM
 -- Server version: 10.1.36-MariaDB
 -- PHP Version: 7.2.11
 
@@ -195,8 +195,18 @@ CREATE TABLE `payment` (
 CREATE TABLE `reservation` (
   `id` int(11) NOT NULL,
   `username` char(20) NOT NULL,
-  `payment_id` int(11) NOT NULL
+  `payment_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `reservation`
+--
+
+INSERT INTO `reservation` (`id`, `username`, `payment_id`) VALUES
+(4, 'rex', NULL),
+(14, 'rex', NULL),
+(15, 'rex', NULL),
+(16, 'rex', NULL);
 
 -- --------------------------------------------------------
 
@@ -206,11 +216,21 @@ CREATE TABLE `reservation` (
 
 CREATE TABLE `reservation_room` (
   `reservation_id` int(11) NOT NULL,
-  `hotel_id` int(11) NOT NULL,
-  `room_type_id` int(11) NOT NULL,
-  `checkin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `checkout_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `room_id` int(11) NOT NULL,
+  `checkin_date` date NOT NULL,
+  `checkout_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `reservation_room`
+--
+
+INSERT INTO `reservation_room` (`reservation_id`, `room_id`, `checkin_date`, `checkout_date`) VALUES
+(4, 19, '2018-11-12', '2018-12-12'),
+(4, 29, '2018-11-12', '2018-12-12'),
+(14, 19, '2018-12-21', '2019-01-12'),
+(15, 21, '2018-11-21', '2019-11-25'),
+(16, 22, '2018-11-21', '2019-11-25');
 
 -- --------------------------------------------------------
 
@@ -386,10 +406,8 @@ ALTER TABLE `reservation`
 -- Indexes for table `reservation_room`
 --
 ALTER TABLE `reservation_room`
-  ADD PRIMARY KEY (`reservation_id`,`hotel_id`,`room_type_id`),
-  ADD UNIQUE KEY `reservation_id` (`reservation_id`),
-  ADD KEY `room_type_id` (`room_type_id`),
-  ADD KEY `hotel_id` (`hotel_id`);
+  ADD PRIMARY KEY (`reservation_id`,`room_id`),
+  ADD KEY `room_id` (`room_id`);
 
 --
 -- Indexes for table `review`
@@ -460,13 +478,7 @@ ALTER TABLE `payment`
 -- AUTO_INCREMENT for table `reservation`
 --
 ALTER TABLE `reservation`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `reservation_room`
---
-ALTER TABLE `reservation_room`
-  MODIFY `reservation_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `review`
@@ -535,15 +547,14 @@ ALTER TABLE `payment`
 --
 ALTER TABLE `reservation`
   ADD CONSTRAINT `reservation_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customers` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `reservation_ibfk_2` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `reservation_ibfk_2` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `reservation_room`
 --
 ALTER TABLE `reservation_room`
-  ADD CONSTRAINT `reservation_room_ibfk_1` FOREIGN KEY (`room_type_id`) REFERENCES `room_type` (`id`),
-  ADD CONSTRAINT `reservation_room_ibfk_2` FOREIGN KEY (`hotel_id`) REFERENCES `hotel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `reservation_room_ibfk_3` FOREIGN KEY (`reservation_id`) REFERENCES `reservation` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `reservation_id` FOREIGN KEY (`reservation_id`) REFERENCES `reservation` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `room_id` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `review`

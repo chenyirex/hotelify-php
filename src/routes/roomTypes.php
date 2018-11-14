@@ -6,8 +6,8 @@
  * Time: 12:34 AM
  */
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 // Get All room types for a hotel
 $app->get('/api/hotels/{id}/room-types', function (Request $request, Response $response, array $args) {
@@ -31,8 +31,8 @@ $app->get('/api/hotels/{id}/room-types', function (Request $request, Response $r
 
         $db = null;
 
-        $response->write($e);
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
@@ -61,33 +61,33 @@ $app->post('/api/hotels/{id}/room-types', function (Request $request, Response $
         if ($stmt->execute()) {
             $room_type_id = $db->lastInsertId();
         } else {
-            return $response->write(['error'=>'could not create the room type'])->withStatus(500);
+            return $response->write(['error' => 'could not create the room type'])->withStatus(500);
         }
     } catch (PDOException $e) {
 
         $db = null;
 
-        $response->write($e);
-        return $response->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 
     // create the room
     $stmt = $db->prepare("INSERT INTO room (`id`, `hotel_id`, `room_type_id`) VALUES (?,?,?)");
     try {
-        for ($i = 0; $i < $parsedBody["slots"]; $i++)
-        {
-            if(!$stmt->execute([null, $hotel_id, $room_type_id])) {
-                return $response->write(json_encode(['error'=>'could not create the room']))->withStatus(500);
+        for ($i = 0; $i < $parsedBody["slots"]; $i++) {
+            if (!$stmt->execute([null, $hotel_id, $room_type_id])) {
+                return $response->write(json_encode(['error' => 'could not create the room']))->withStatus(500);
             }
         }
         $db->commit();
 
-        return $response->write(json_encode(['id'=>$room_type_id]));
-    }catch (Exception $e){
+        return $response->write(json_encode(['id' => $room_type_id]));
+    } catch (Exception $e) {
 
         $db->rollback();
 
-        return $response->write($e)->withStatus(500);
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
@@ -118,17 +118,17 @@ $app->put('/api/room-types/{id}', function (Request $request, Response $response
         $stmt->bindParam("total_slots", $parsedBody["total_slots"]);
         if ($stmt->execute()) {
             $db = null;
-            return $response->write(json_encode(['id'=>$id]))->withStatus(200);
+            return $response->write(json_encode(['id' => $id]))->withStatus(200);
         } else {
             $db = null;
-            $response->write(json_encode(['error'=>'Fail to update the room type']));
+            $response->write(json_encode(['error' => 'Fail to update the room type']));
             return $response->withStatus(500);
         }
     } catch (PDOException $e) {
-
         $db = null;
-        $response->write($e);
-        return $response->withStatus(500);
+
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
@@ -149,11 +149,12 @@ $app->delete('/api/room-types/{id}', function (Request $request, Response $respo
             return $response->withStatus(200);
         } else {
             $db = null;
-            return $response->write(json_decode(['error'=>'no room type with given id found']))->withStatus(404);
+            return $response->write(json_decode(['error' => 'no room type with given id found']))->withStatus(404);
         }
     } catch (PDOException $e) {
-        $db->rollBack();
         $db = null;
-        return $response->write($e)->withStatus(500);
+
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
