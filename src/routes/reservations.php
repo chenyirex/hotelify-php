@@ -16,9 +16,10 @@ $app->get('/api/reservations/customer/{username}', function (Request $request, R
 
     $username = $args['username'];
 
-    $getQuery = "SELECT r.id, r.username, r.payment_id, rm.room_id, rm.checkin_date, rm.checkout_date 
-                FROM reservation r, reservation_room rm WHERE r.username = :username AND r.id = rm.reservation_id";
-
+    $getQuery = "SELECT re.id, re.username, re.payment_id, rm.room_id, r.hotel_id, r.room_type_id, rm.checkin_date, rm.checkout_date 
+                FROM reservation re, reservation_room rm, room r  
+                WHERE re.username = :username AND re.id = rm.reservation_id AND r.id = rm.room_id";
+    
     $db = new db();
     $db = $db->connect();
 
@@ -61,7 +62,7 @@ $app->post('/api/reservations/create', function (Request $request, Response $res
 
     $parsedBody = $request->getParsedBody();
 
-    $id = $parsedBody['id'];
+    $id = array_key_exists('id', $parsedBody) ? $parsedBody['id'] : null;;
 
     $reservationQuery = "INSERT INTO reservation (username) VALUES (:username)";
     $reservationRoomQuery = "INSERT INTO reservation_room (reservation_id, checkin_date,checkout_date,room_id) 

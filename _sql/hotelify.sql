@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 13, 2018 at 05:33 AM
+-- Generation Time: Nov 14, 2018 at 07:45 AM
 -- Server version: 10.1.36-MariaDB
 -- PHP Version: 7.2.11
 
@@ -42,11 +42,11 @@ CREATE TABLE `address` (
 --
 
 INSERT INTO `address` (`id`, `country`, `province`, `city`, `street`, `postal_code`) VALUES
-(1, 'Canada', 'British Columbia', 'Vancouver', '123 any street', 'V6S 0G3'),
+(1, 'Canada', 'British Columbia', 'Vancouver', '791 W Georgia St', 'V6C 2T4'),
 (2, 'United States', 'California', 'Irvine', '123 any street', '92602'),
 (3, 'Canada', 'British Columbia', 'Vancouver', '5959 Student Union Blvd', 'V6T 1K2'),
-(4, 'china', 'chongqing', 'chongqing', 'yuzhou road', '400039'),
-(5, 'china', 'beijing', 'beijing', 'yuzhou road', '400039'),
+(4, 'Canada', 'British Columbia', 'Richmond', '3111 Grant McConachie Way', 'V6C 2T4'),
+(5, 'China', 'ChongQing', 'ChongQing', 'Yuzhou road', '400039'),
 (6, 'Canada', 'BC', 'Vancouver', 'downtown', 'V6T1Z2');
 
 -- --------------------------------------------------------
@@ -156,10 +156,11 @@ CREATE TABLE `hotel` (
 --
 
 INSERT INTO `hotel` (`id`, `brand_name`, `branch_name`, `property_class`, `address_id`, `description`, `overall_rating`, `phone_number`) VALUES
-(1, 'Walter Gage', 'UBC', 1, 3, 'this is a good one', NULL, '6048221020'),
-(2, 'seven day', 'sevenify', 1, 4, 'cheapst hotel, good hotel', NULL, '8008208820'),
-(3, 'deluxe seven day', 'sevenify', 1, 5, 'not cheap hotel, good hotel', NULL, '13308002132'),
-(4, 'exchange hotel', '', 4, 6, 'Situated within 200 metres of Waterfront Centre Mall Vancouver and Vancouver Lookout at Harbour Centre, EXchange Hotel Vancouver features rooms with air conditioning. Free WiFi is available.', NULL, '6047190900');
+(1, 'Walter Gage', 'UBC', 3, 3, 'Walter Gage is known for its positive energy and superb location. Three high-rise towers are conveniently located near the The Nest, bus loop, and many campus recreational facilities.', 'good', '6048221020'),
+(2, 'Fairmont', 'Vancouver Airport', 4, 4, 'cheapst hotel, good hotel', 'Excellent', '8008208820'),
+(3, 'Deluxe Seven Day', 'sevenify', 1, 5, 'not cheap hotel, good hotel', NULL, '13308002132'),
+(4, 'Exchange Hotel', '', 4, 6, 'Situated within 200 metres of Waterfront Centre Mall Vancouver and Vancouver Lookout at Harbour Centre, EXchange Hotel Vancouver features rooms with air conditioning. Free WiFi is available.', NULL, '6047190900'),
+(5, 'Four Seasons', 'Vancouver', 5, 1, 'Modern rooms & plush suites with skyline views, plus an indoor/outdoor pool & a seafood restaurant.', 'very good', '6046899333');
 
 -- --------------------------------------------------------
 
@@ -278,7 +279,13 @@ INSERT INTO `room` (`id`, `hotel_id`, `room_type_id`) VALUES
 (31, 1, 39),
 (32, 1, 39),
 (33, 1, 39),
-(34, 1, 40);
+(34, 1, 40),
+(35, 2, 40),
+(36, 2, 39),
+(37, 2, 38),
+(38, 2, 37),
+(39, 2, 36),
+(40, 2, 35);
 
 -- --------------------------------------------------------
 
@@ -466,7 +473,7 @@ ALTER TABLE `coupon_type`
 -- AUTO_INCREMENT for table `hotel`
 --
 ALTER TABLE `hotel`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `payment`
@@ -490,7 +497,7 @@ ALTER TABLE `review`
 -- AUTO_INCREMENT for table `room`
 --
 ALTER TABLE `room`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `room_type`
