@@ -29,6 +29,7 @@ $app->add(function ($req, $res, $next) {
 require '../src/routes/customers.php';
 require '../src/routes/administrators.php';
 require '../src/routes/hotels.php';
+require '../src/routes/hotel_tag.php';
 require '../src/routes/reviews.php';
 require '../src/routes/addresses.php';
 require '../src/routes/roomTypes.php';

@@ -106,7 +106,7 @@ CREATE TABLE `coupon` (
 CREATE TABLE `coupon_type` (
   `id` int(11) NOT NULL,
   `value` int(11) NOT NULL,
-  `discount_type` char(4) NOT NULL
+  `discount_type` char(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -317,14 +317,6 @@ INSERT INTO `room_type` (`id`, `type_name`, `occupancy`, `description`, `price`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tag`
---
-
-CREATE TABLE `tag` (
-  `name` char(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
 -- Indexes for dumped tables
 --
 
@@ -388,8 +380,7 @@ ALTER TABLE `hotel`
 -- Indexes for table `hotel_tag`
 --
 ALTER TABLE `hotel_tag`
-  ADD PRIMARY KEY (`hotel_id`,`tag_name`),
-  ADD KEY `tag_name` (`tag_name`);
+  ADD PRIMARY KEY (`hotel_id`,`tag_name`);
 
 --
 -- Indexes for table `payment`
@@ -440,12 +431,6 @@ ALTER TABLE `room_type`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`);
 
---
--- Indexes for table `tag`
---
-ALTER TABLE `tag`
-  ADD PRIMARY KEY (`name`),
-  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -539,8 +524,7 @@ ALTER TABLE `hotel`
 -- Constraints for table `hotel_tag`
 --
 ALTER TABLE `hotel_tag`
-  ADD CONSTRAINT `hotel_tag_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hotel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `hotel_tag_ibfk_2` FOREIGN KEY (`tag_name`) REFERENCES `tag` (`name`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `hotel_tag_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hotel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `payment`
