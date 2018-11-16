@@ -77,7 +77,7 @@ INSERT INTO `administrator` (`username`, `password`, `first_name`, `last_name`) 
 
 CREATE TABLE `card` (
   `card_number` char(20) NOT NULL,
-  `card_holder_name` char(10) NOT NULL,
+  `card_holder_name` char(20) NOT NULL,
   `csv` char(5) NOT NULL,
   `expire_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `username` char(20) NOT NULL
@@ -531,7 +531,6 @@ ALTER TABLE `hotel_tag`
 --
 ALTER TABLE `payment`
   ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`card_number`) REFERENCES `card` (`card_number`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `reservation`
