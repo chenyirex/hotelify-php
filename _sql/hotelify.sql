@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 14, 2018 at 07:45 AM
+-- Generation Time: Nov 16, 2018 at 09:28 PM
 -- Server version: 10.1.36-MariaDB
 -- PHP Version: 7.2.11
 
@@ -42,12 +42,13 @@ CREATE TABLE `address` (
 --
 
 INSERT INTO `address` (`id`, `country`, `province`, `city`, `street`, `postal_code`) VALUES
-(1, 'Canada', 'British Columbia', 'Vancouver', '791 W Georgia St', 'V6C 2T4'),
-(2, 'United States', 'California', 'Irvine', '123 any street', '92602'),
-(3, 'Canada', 'British Columbia', 'Vancouver', '5959 Student Union Blvd', 'V6T 1K2'),
-(4, 'Canada', 'British Columbia', 'Richmond', '3111 Grant McConachie Way', 'V6C 2T4'),
-(5, 'China', 'ChongQing', 'ChongQing', 'Yuzhou road', '400039'),
-(6, 'Canada', 'BC', 'Vancouver', 'downtown', 'V6T1Z2');
+(1, 'Canada', 'BC', 'Vancouver', '791 W Georgia St', 'V6C 2T4'),
+(2, 'United States', 'CA', 'Irvine', '123 any street', '92602'),
+(3, 'Canada', 'BC', 'Vancouver', '5959 Student Union Blvd', 'V6T 1K2'),
+(4, 'Canada', 'BC', 'Richmond', '3111 Grant McConachie Way', 'V6C 2T4'),
+(6, 'Canada', 'BC', 'Vancouver', '475 Howe Street', 'V6B 2B3'),
+(7, 'Canada', 'ON', 'Toronto', '33 Gerrard Street West', 'M5G 1Z4'),
+(8, 'Canada', 'BC', 'Vancouver', '900 W Georgia St', 'V6C 2W6');
 
 -- --------------------------------------------------------
 
@@ -83,6 +84,13 @@ CREATE TABLE `card` (
   `username` char(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `card`
+--
+
+INSERT INTO `card` (`card_number`, `card_holder_name`, `csv`, `expire_date`, `username`) VALUES
+('88888888', 'yi', '345', '2019-09-09', 'rex');
+
 -- --------------------------------------------------------
 
 --
@@ -97,6 +105,13 @@ CREATE TABLE `coupon` (
   `expire_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `coupon`
+--
+
+INSERT INTO `coupon` (`id`, `username`, `type_id`, `hotel_id`, `expire_date`) VALUES
+(1, 'rex', 1, 1, '2019-09-09 00:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -108,6 +123,14 @@ CREATE TABLE `coupon_type` (
   `value` int(11) NOT NULL,
   `discount_type` char(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `coupon_type`
+--
+
+INSERT INTO `coupon_type` (`id`, `value`, `discount_type`) VALUES
+(1, 30, 'percent'),
+(2, 100, 'amount');
 
 -- --------------------------------------------------------
 
@@ -157,10 +180,11 @@ CREATE TABLE `hotel` (
 
 INSERT INTO `hotel` (`id`, `brand_name`, `branch_name`, `property_class`, `address_id`, `description`, `overall_rating`, `phone_number`) VALUES
 (1, 'Walter Gage', 'UBC', 3, 3, 'Walter Gage is known for its positive energy and superb location. Three high-rise towers are conveniently located near the The Nest, bus loop, and many campus recreational facilities.', 'good', '6048221020'),
-(2, 'Fairmont', 'Vancouver Airport', 4, 4, 'cheapst hotel, good hotel', 'Excellent', '8008208820'),
-(3, 'Deluxe Seven Day', 'sevenify', 1, 5, 'not cheap hotel, good hotel', NULL, '13308002132'),
-(4, 'Exchange Hotel', '', 4, 6, 'Situated within 200 metres of Waterfront Centre Mall Vancouver and Vancouver Lookout at Harbour Centre, EXchange Hotel Vancouver features rooms with air conditioning. Free WiFi is available.', NULL, '6047190900'),
-(5, 'Four Seasons', 'Vancouver', 5, 1, 'Modern rooms & plush suites with skyline views, plus an indoor/outdoor pool & a seafood restaurant.', 'very good', '6046899333');
+(2, 'Fairmont', 'Vancouver Airport', 4, 4, 'Set within the Vancouver International Airport, this upscale hotel is 1 km from YVR-Airport Station train station and 9 km from VanDusen Botanical Garden.', NULL, '8008208820'),
+(4, 'Exchange Hotel', 'Vancouver', 4, 6, 'Situated within 200 metres of Waterfront Centre Mall Vancouver and Vancouver Lookout at Harbour Centre, EXchange Hotel Vancouver features rooms with air conditioning. Free WiFi is available.', NULL, '6047190900'),
+(5, 'Four Seasons', 'Vancouver', 5, 1, 'Modern rooms & plush suites with skyline views, plus an indoor/outdoor pool & a seafood restaurant.', NULL, '6046899333'),
+(6, 'Chelsea Hotel', 'Toronto', 3, 7, NULL, NULL, NULL),
+(7, 'Fairmont', 'Vancouver Downtown', 4, 8, 'A 2-minute walk from the Vancouver Art Gallery and a 4-minute walk from Vancouver City Centre Station, this elegant hotel dating from 1939 is a 10-minute walk from the Canada Place convention centre.', NULL, '6046843131');
 
 -- --------------------------------------------------------
 
@@ -187,6 +211,14 @@ CREATE TABLE `payment` (
   `card_number` char(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `payment`
+--
+
+INSERT INTO `payment` (`id`, `amount`, `coupon_id`, `card_number`) VALUES
+(7, 500, NULL, '88888888'),
+(8, 350, 1, '88888888');
+
 -- --------------------------------------------------------
 
 --
@@ -204,8 +236,8 @@ CREATE TABLE `reservation` (
 --
 
 INSERT INTO `reservation` (`id`, `username`, `payment_id`) VALUES
-(4, 'rex', NULL),
-(14, 'rex', NULL),
+(4, 'rex', 7),
+(14, 'rex', 8),
 (15, 'rex', NULL),
 (16, 'rex', NULL);
 
@@ -285,7 +317,30 @@ INSERT INTO `room` (`id`, `hotel_id`, `room_type_id`) VALUES
 (37, 2, 38),
 (38, 2, 37),
 (39, 2, 36),
-(40, 2, 35);
+(40, 2, 35),
+(41, 6, 41),
+(42, 6, 41),
+(43, 6, 41),
+(44, 6, 41),
+(45, 6, 41),
+(46, 6, 42),
+(47, 6, 42),
+(48, 6, 42),
+(49, 6, 42),
+(50, 6, 42),
+(51, 6, 43),
+(52, 6, 43),
+(53, 4, 44),
+(54, 4, 44),
+(55, 5, 45),
+(56, 5, 46),
+(57, 5, 46),
+(58, 5, 47),
+(59, 7, 48),
+(60, 7, 48),
+(61, 7, 48),
+(62, 7, 48),
+(63, 7, 48);
 
 -- --------------------------------------------------------
 
@@ -295,7 +350,7 @@ INSERT INTO `room` (`id`, `hotel_id`, `room_type_id`) VALUES
 
 CREATE TABLE `room_type` (
   `id` int(11) NOT NULL,
-  `type_name` char(20) NOT NULL,
+  `type_name` char(50) NOT NULL,
   `occupancy` int(11) NOT NULL,
   `description` char(255) DEFAULT NULL,
   `price` int(11) NOT NULL,
@@ -307,14 +362,20 @@ CREATE TABLE `room_type` (
 --
 
 INSERT INTO `room_type` (`id`, `type_name`, `occupancy`, `description`, `price`, `total_slots`) VALUES
-(35, 'rex room', 3, 'this room is for rex', 100, 1),
-(36, 'haus room', 3, 'this room is for haus', 100, 2),
-(37, 'scott room', 3, 'this room is for scott', 100, 3),
-(38, 'kanglong room', 3, 'this room is for kanglong', 100, 4),
-(39, 'general room', 2, 'this room for general use', 100, 5),
-(40, 'emergency room', 2, 'this room for emergency use', 100, 1);
-
--- --------------------------------------------------------
+(35, 'Regular Double Bed Room', 2, 'this room is for rex', 100, 2),
+(36, 'Regular Single Bed Room', 2, 'this room is for haus', 100, 2),
+(37, 'Standard Queen Room', 3, 'this room is for scott', 300, 3),
+(38, 'Standard King Room', 5, 'this room is for kanglong', 300, 3),
+(39, 'Deluxe President Suite', 5, 'For Hotelify developers only', 1000, 1),
+(40, 'Deluxe King Room', 2, 'Deluxe King', 800, 2),
+(41, 'Deluxe Queen Room', 2, NULL, 700, 2),
+(42, 'Standard Queen Room', 2, NULL, 150, 5),
+(43, 'Standard Double Room', 4, NULL, 300, 2),
+(44, 'Deluxe Queen Room', 2, 'Great views', 150, 2),
+(45, 'Deluxe Queen Room', 2, 'Great views', 190, 1),
+(46, 'Deluxe King Room', 2, NULL, 400, 2),
+(47, 'Regular Double Bed Room', 2, NULL, 100, 1),
+(48, 'Standard Queen Room', 2, NULL, 400, 5);
 
 --
 -- Indexes for dumped tables
@@ -431,7 +492,6 @@ ALTER TABLE `room_type`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`);
 
-
 --
 -- AUTO_INCREMENT for dumped tables
 --
@@ -440,31 +500,31 @@ ALTER TABLE `room_type`
 -- AUTO_INCREMENT for table `address`
 --
 ALTER TABLE `address`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `coupon`
 --
 ALTER TABLE `coupon`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `coupon_type`
 --
 ALTER TABLE `coupon_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `hotel`
 --
 ALTER TABLE `hotel`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `reservation`
@@ -482,13 +542,13 @@ ALTER TABLE `review`
 -- AUTO_INCREMENT for table `room`
 --
 ALTER TABLE `room`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `room_type`
 --
 ALTER TABLE `room_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- Constraints for dumped tables
@@ -530,7 +590,7 @@ ALTER TABLE `hotel_tag`
 -- Constraints for table `payment`
 --
 ALTER TABLE `payment`
-  ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `reservation`

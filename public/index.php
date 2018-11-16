@@ -37,6 +37,7 @@ require '../src/routes/addresses.php';
 require '../src/routes/roomTypes.php';
 require '../src/routes/reservations.php';
 require '../src/routes/cards.php';
+require '../src/routes/payments.php';
 
 
 $app->run();
