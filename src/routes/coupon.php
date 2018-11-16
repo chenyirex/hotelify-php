@@ -17,7 +17,7 @@ $app->get('/api/coupons/customer/{username}', function (Request $request, Respon
                     H.brand_name, H.branch_name, H.property_class, H.description, H.overall_rating
             FROM coupon C, coupon_type CT, hotel H
             WHERE username = :username AND C.type_id = CT.id AND C.hotel_id = H.id AND C.expire_date >= :current
-            AND C.id NOT IN ( SELECT coupon_id FROM payment)
+            AND C.id NOT IN ( SELECT coupon_id FROM payment WHERE coupon_id IS NOT NULL)
             ORDER BY C.hotel_id";
     try {
         // Get DB Object
@@ -47,7 +47,7 @@ $app->get('/api/coupons/customer/{username}/hotel/{id}', function (Request $requ
     $sql = "SELECT C.id, C.username, C.type_id, C.hotel_id, C.expire_date, CT.value, CT.discount_type 
             FROM coupon C, coupon_type CT 
             WHERE username = :username AND hotel_id = :hotel_id AND C.type_id = CT.id AND C.expire_date >= :current
-            AND C.id NOT IN ( SELECT coupon_id FROM payment)
+            AND C.id NOT IN ( SELECT coupon_id FROM payment WHERE coupon_id IS NOT NULL)
             ORDER BY C.expire_date";
     try {
         // Get DB Object
