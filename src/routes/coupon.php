@@ -13,9 +13,10 @@ use \Psr\Http\Message\ResponseInterface as Response;
 $app->get('/api/coupons/customer/{username}', function (Request $request, Response $response, array $args) {
     $username = $args['username'];
     $current=date('Y-m-d');
-    $sql = "SELECT C.id, C.username, C.type_id, C.hotel_id, C.expire_date, CT.value, CT.discount_type
-            FROM coupon C, coupon_type CT
-            WHERE username = :username AND C.type_id = CT.id AND C.expire_date >= :current
+    $sql = "SELECT C.id, C.username, C.type_id, C.hotel_id, C.expire_date, CT.value, CT.discount_type,
+                    H.brand_name, H.branch_name, H.property_class, H.description, H.overall_rating
+            FROM coupon C, coupon_type CT, hotel H
+            WHERE username = :username AND C.type_id = CT.id AND C.hotel_id = H.id AND C.expire_date >= :current
             AND C.id NOT IN ( SELECT coupon_id FROM payment)
             ORDER BY C.hotel_id";
     try {
