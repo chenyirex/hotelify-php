@@ -16,9 +16,10 @@ $app->get('/api/reservations/customer/{username}', function (Request $request, R
 
     $username = $args['username'];
 
-    $getQuery = "SELECT re.id, re.username, re.payment_id, rm.room_id, r.hotel_id, r.room_type_id, rm.checkin_date, rm.checkout_date 
-                FROM reservation re, reservation_room rm, room r  
-                WHERE re.username = :username AND re.id = rm.reservation_id AND r.id = rm.room_id";
+    $getQuery = "SELECT re.id, re.username, re.payment_id, rm.room_id, r.hotel_id, r.room_type_id, rm.checkin_date, rm.checkout_date, rt.type_name, rt.price, h.brand_name, h.branch_name  
+                FROM reservation re, reservation_room rm, room r, room_type rt, hotel h    
+                WHERE re.username = :username AND re.id = rm.reservation_id AND r.id = rm.room_id AND rt.id = r.room_type_id AND h.id = r.hotel_id 
+                ORDER BY rm.checkin_date ";
     
     $db = new db();
     $db = $db->connect();
