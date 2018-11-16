@@ -79,7 +79,7 @@ CREATE TABLE `card` (
   `card_number` char(20) NOT NULL,
   `card_holder_name` char(20) NOT NULL,
   `csv` char(5) NOT NULL,
-  `expire_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `expire_date` date NOT NULL,
   `username` char(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
