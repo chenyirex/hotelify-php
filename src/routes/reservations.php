@@ -8,6 +8,7 @@
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Twilio\Rest\Client;
 
 /**
  * get all reservations for a customer
@@ -20,7 +21,7 @@ $app->get('/api/reservations/customer/{username}', function (Request $request, R
                 FROM reservation re, reservation_room rm, room r, room_type rt, hotel h    
                 WHERE re.username = :username AND re.id = rm.reservation_id AND r.id = rm.room_id AND rt.id = r.room_type_id AND h.id = r.hotel_id 
                 ORDER BY rm.checkin_date ";
-    
+
     $db = new db();
     $db = $db->connect();
 
@@ -64,10 +65,14 @@ $app->post('/api/reservations/create', function (Request $request, Response $res
     $parsedBody = $request->getParsedBody();
 
     $id = array_key_exists('id', $parsedBody) ? $parsedBody['id'] : null;;
+    $username = $parsedBody['username'];
+    $checkin_date = $parsedBody['checkin_date'];
+    $checkout_date = $parsedBody['checkout_date'];
 
     $reservationQuery = "INSERT INTO reservation (username) VALUES (:username)";
     $reservationRoomQuery = "INSERT INTO reservation_room (reservation_id, checkin_date,checkout_date,room_id) 
                             VALUES (:reservation_id,:checkin_date,:checkout_date,:room_id)";
+    $getHotelQuery = "SELECT * FROM reservation_hotel rh, hotel h WHERE rh.hotel_id = h.id AND rh.reservation_id = :id";
 
     $db = new db();
     $db = $db->connect();
@@ -77,7 +82,7 @@ $app->post('/api/reservations/create', function (Request $request, Response $res
 
         if (!$id) {
             $stmt = $db->prepare($reservationQuery);
-            $stmt->bindParam("username", $parsedBody['username']);
+            $stmt->bindParam("username", $username);
             if ($stmt->execute()) {
                 $id = $db->lastInsertId();
             } else {
@@ -90,13 +95,32 @@ $app->post('/api/reservations/create', function (Request $request, Response $res
         $stmt = $db->prepare($reservationRoomQuery);
 
         $stmt->bindParam("reservation_id", $id);
-        $stmt->bindParam("checkin_date", $parsedBody['checkin_date']);
-        $stmt->bindParam("checkout_date", $parsedBody['checkout_date']);
+        $stmt->bindParam("checkin_date", $checkin_date);
+        $stmt->bindParam("checkout_date", $checkout_date);
         $stmt->bindParam("room_id", $parsedBody['room_id']);
 
         if ($stmt->execute()) {
+
             $db->commit();
+
+            $stmt = $db->prepare($getHotelQuery);
+            $stmt->bindParam('id', $id);
+            $stmt->execute();
+
+            $hotel = $stmt->fetch(PDO::FETCH_OBJ);
+
             $db = null;
+
+            $sid = "AC7137a2148d05b72a982c77178307416d";
+            $token = "9a453166f9433180502697346e99163b";
+            $twilio = new Client($sid, $token);
+
+            $twilio->messages
+                ->create("+17789911125", // to
+                    array(
+                        "from" => "+13433003206",
+                        "body" => "Hi $username, Thank you for using Hotelify to book your hotel! Your reservation at $hotel->brand_name has been accepted. Check-in date is $checkin_date, check-out date is $checkout_date.")
+                );
 
             $responseArray = array();
             $responseArray["id"] = $id;
