@@ -1,12 +1,12 @@
 <?php
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 // Get All Customers
 $app->get('/api/customers', function (Request $request, Response $response) {
 
-    $sql = "SELECT * FROM customers";
+    $sql = "SELECT * FROM customer";
     try {
         // Get DB Object
         $db = new db();
@@ -20,14 +20,14 @@ $app->get('/api/customers', function (Request $request, Response $response) {
     } catch (PDOException $e) {
         $db = null;
         $errorMessage = $e->getMessage();
-        return $response->write(json_encode(['error'=>''.$errorMessage]))->withStatus(500);
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
 // Get Customer By Username
 $app->get('/api/customers/{username}', function (Request $request, Response $response, array $args) {
     $username = $args['username'];
-    $sql = "SELECT * FROM customers WHERE username = :username";
+    $sql = "SELECT * FROM customer WHERE username = :username";
 
     try {
         // Get DB Object
@@ -40,14 +40,14 @@ $app->get('/api/customers/{username}', function (Request $request, Response $res
         $customer = $stmt->fetch(PDO::FETCH_OBJ);
         $db = null;
         if (empty($customer)) {
-            return $response->write(json_encode(['error'=>'No user found for '. $username ]))->withStatus(404);
+            return $response->write(json_encode(['error' => 'No user found for ' . $username]))->withStatus(404);
         }
         $response->write(json_encode($customer));
         return $response->withStatus(200);
     } catch (PDOException $e) {
         $db = null;
         $errorMessage = $e->getMessage();
-        return $response->write(json_encode(['error'=>''.$errorMessage]))->withStatus(500);
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
@@ -57,7 +57,7 @@ $app->post('/api/customers/login', function (Request $request, Response $respons
     $username = $request->getParam('username');
     $password = $request->getParam('password');
 
-    $sql = "SELECT * FROM customers where username = '$username'";
+    $sql = "SELECT * FROM customer where username = '$username'";
 
     try {
         // Get DB Object
@@ -70,7 +70,7 @@ $app->post('/api/customers/login', function (Request $request, Response $respons
         $db = null;
 
         if (!$customer) {
-            return $response->write(json_encode(['error'=>'No customer found']))->withStatus(404);
+            return $response->write(json_encode(['error' => 'No customer found']))->withStatus(404);
         }
 
         if ($customer->password == $password) {
@@ -80,51 +80,50 @@ $app->post('/api/customers/login', function (Request $request, Response $respons
             return $response->write(json_encode($responseArray));
             return $response->withStatus(200);
         } else {
-            return $response->write(json_encode(['error'=>'Wrong credential']))->withStatus(401);
+            return $response->write(json_encode(['error' => 'Wrong credential']))->withStatus(401);
         }
     } catch (PDOException $e) {
         $db = null;
         $errorMessage = $e->getMessage();
-        return $response->write(json_encode(['error'=>''.$errorMessage]))->withStatus(500);
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 
-$app->post('/api/customers/signup', function(Request $request, Response $response){
+$app->post('/api/customers/signup', function (Request $request, Response $response) {
     $first_name = $request->getParam('first_name');
     $last_name = $request->getParam('last_name');
     $username = $request->getParam('username');
     $password = $request->getParam('password');
     $email = $request->getParam('email');
     $phone = $request->getParam('phone');
-    $sql = "INSERT INTO customers(first_name, last_name, username, password, email, phone, points) VALUES (:first_name, :last_name, :username, :password, :email, :phone, 0)";
+    $sql = "INSERT INTO customer(first_name, last_name, username, password, email, phone, points) VALUES (:first_name, :last_name, :username, :password, :email, :phone, 0)";
     // prepare query
 
-    try{
+    try {
         // Get DB Object
         $db = new db();
         // Connect
         $db = $db->connect();
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':first_name', $first_name);
-        $stmt->bindParam(':last_name',  $last_name);
+        $stmt->bindParam(':last_name', $last_name);
         $stmt->bindParam(':username', $username);
-        $stmt->bindParam(':password',  $password);
+        $stmt->bindParam(':password', $password);
         $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':phone',  $phone);
-        if($stmt->execute()){
+        $stmt->bindParam(':phone', $phone);
+        if ($stmt->execute()) {
             $db = null;
             $responseArray = array();
             $responseArray["id"] = $username;
             return $response->write(json_encode($responseArray))->withStatus(200);
-        }
-        else{
+        } else {
             $db = null;
-            return $response->write(json_encode(['error'=>'fail to create new customer']))->withStatus(500);
+            return $response->write(json_encode(['error' => 'fail to create new customer']))->withStatus(500);
         }
-    } catch(PDOException $e){
+    } catch (PDOException $e) {
         $db = null;
         $errorMessage = $e->getMessage();
-        return $response->write(json_encode(['error'=>''.$errorMessage]))->withStatus(500);
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });
 //update by username
@@ -137,7 +136,7 @@ $app->put('/api/customers/update', function (Request $request, Response $respons
     $phone = $request->getParam('phone');
     $address_id = $request->getParam('address_id');
     $points = $request->getParam('points');
-    $sql = "UPDATE customers
+    $sql = "UPDATE customer
          SET first_name = :first_name, last_name = :last_name,  password = :password, phone = :phone,
               email = :email, address_id = :address_id, points = :points
          WHERE username = :username";
@@ -148,9 +147,9 @@ $app->put('/api/customers/update', function (Request $request, Response $respons
         $db = $db->connect();
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':first_name', $first_name);
-        $stmt->bindParam(':last_name',  $last_name);
+        $stmt->bindParam(':last_name', $last_name);
         $stmt->bindParam(':password', $password);
-        $stmt->bindParam(':phone',  $phone);
+        $stmt->bindParam(':phone', $phone);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':points', $points);
         $stmt->bindParam(':address_id', $address_id);
@@ -163,6 +162,6 @@ $app->put('/api/customers/update', function (Request $request, Response $respons
     } catch (PDOException $e) {
         $db = null;
         $errorMessage = $e->getMessage();
-        return $response->write(json_encode(['error'=>''.$errorMessage]))->withStatus(500);
+        return $response->write(json_encode(['error' => '' . $errorMessage]))->withStatus(500);
     }
 });

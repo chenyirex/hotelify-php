@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 16, 2018 at 09:28 PM
+-- Generation Time: Nov 17, 2018 at 11:50 PM
 -- Server version: 10.1.36-MariaDB
 -- PHP Version: 7.2.11
 
@@ -89,7 +89,7 @@ CREATE TABLE `card` (
 --
 
 INSERT INTO `card` (`card_number`, `card_holder_name`, `csv`, `expire_date`, `username`) VALUES
-('88888888', 'yi', '345', '2019-09-09', 'rex');
+('8888888888888888', 'yi', '345', '2019-09-09', 'rex');
 
 -- --------------------------------------------------------
 
@@ -100,17 +100,19 @@ INSERT INTO `card` (`card_number`, `card_holder_name`, `csv`, `expire_date`, `us
 CREATE TABLE `coupon` (
   `id` int(11) NOT NULL,
   `username` char(255) DEFAULT NULL,
-  `type_id` int(11) NOT NULL,
+  `coupon_type_id` int(11) NOT NULL,
   `hotel_id` int(11) NOT NULL,
-  `expire_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `expire_date` date NOT NULL,
+  `is_used` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `coupon`
 --
 
-INSERT INTO `coupon` (`id`, `username`, `type_id`, `hotel_id`, `expire_date`) VALUES
-(1, 'rex', 1, 1, '2019-09-09 00:00:00');
+INSERT INTO `coupon` (`id`, `username`, `coupon_type_id`, `hotel_id`, `expire_date`, `is_used`) VALUES
+(1, 'rex', 1, 1, '2019-09-09', 1),
+(4, 'qkl', 3, 1, '2020-01-01', 0);
 
 -- --------------------------------------------------------
 
@@ -121,41 +123,52 @@ INSERT INTO `coupon` (`id`, `username`, `type_id`, `hotel_id`, `expire_date`) VA
 CREATE TABLE `coupon_type` (
   `id` int(11) NOT NULL,
   `value` int(11) NOT NULL,
-  `discount_type` char(7) NOT NULL
+  `discount_type` char(255) NOT NULL,
+  `points_cost` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `coupon_type`
 --
 
-INSERT INTO `coupon_type` (`id`, `value`, `discount_type`) VALUES
-(1, 30, 'percent'),
-(2, 100, 'amount');
+INSERT INTO `coupon_type` (`id`, `value`, `discount_type`, `points_cost`) VALUES
+(1, 30, '%', 1500),
+(2, 100, '$', 500),
+(3, 10, '%', 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `customers`
+-- Table structure for table `customer`
 --
 
-CREATE TABLE `customers` (
+CREATE TABLE `customer` (
   `first_name` char(20) NOT NULL,
   `last_name` char(20) NOT NULL,
   `username` char(20) NOT NULL,
   `password` char(20) NOT NULL,
   `email` char(20) NOT NULL,
-  `phone` char(15) NOT NULL,
+  `phone_number` char(15) NOT NULL,
   `address_id` int(11) DEFAULT NULL,
   `points` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `customers`
+-- Dumping data for table `customer`
 --
 
-INSERT INTO `customers` (`first_name`, `last_name`, `username`, `password`, `email`, `phone`, `address_id`, `points`) VALUES
-('rex', 'chen', 'rex', 'rex', 'rex@gmail.com', '7789919999', 1, 0),
+INSERT INTO `customer` (`first_name`, `last_name`, `username`, `password`, `email`, `phone_number`, `address_id`, `points`) VALUES
+('Kanglong', 'Qiu', 'qkl', 'qkl', 'qkl@gmail.com', '7788888888', 1, 100),
+('rex', 'chen', 'rex', 'rex', 'rex@gmail.com', '7789919999', 1, 350),
 ('ao', 'tang', 'suiyobi', '123', '123', '', 2, 0);
+
+--
+-- Triggers `customer`
+--
+DELIMITER $$
+CREATE TRIGGER `New User Coupon event(UBC)` AFTER INSERT ON `customer` FOR EACH ROW INSERT INTO coupon VALUES(null,NEW.username, 3, 1, '2020-01-01')
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -198,6 +211,14 @@ CREATE TABLE `hotel_tag` (
   `popularity` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `hotel_tag`
+--
+
+INSERT INTO `hotel_tag` (`hotel_id`, `tag_name`, `popularity`) VALUES
+(1, 'cheap', 3),
+(1, 'clean', 7);
+
 -- --------------------------------------------------------
 
 --
@@ -216,8 +237,8 @@ CREATE TABLE `payment` (
 --
 
 INSERT INTO `payment` (`id`, `amount`, `coupon_id`, `card_number`) VALUES
-(7, 500, NULL, '88888888'),
-(8, 350, 1, '88888888');
+(7, 500, NULL, '8888888888888888'),
+(18, 350, 1, '8888888888888888');
 
 -- --------------------------------------------------------
 
@@ -237,9 +258,36 @@ CREATE TABLE `reservation` (
 
 INSERT INTO `reservation` (`id`, `username`, `payment_id`) VALUES
 (4, 'rex', 7),
-(14, 'rex', 8),
-(15, 'rex', NULL),
-(16, 'rex', NULL);
+(14, 'rex', 18),
+(17, 'suiyobi', NULL),
+(18, 'suiyobi', NULL),
+(19, 'qkl', NULL),
+(20, 'suiyobi', NULL),
+(21, 'suiyobi', NULL),
+(22, 'suiyobi', NULL),
+(23, 'suiyobi', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `reservations_per_hotel`
+-- (See below for the actual view)
+--
+CREATE TABLE `reservations_per_hotel` (
+`hotel_id` int(11)
+,`result` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `reservation_hotel`
+-- (See below for the actual view)
+--
+CREATE TABLE `reservation_hotel` (
+`reservation_id` int(11)
+,`hotel_id` int(11)
+);
 
 -- --------------------------------------------------------
 
@@ -261,9 +309,16 @@ CREATE TABLE `reservation_room` (
 INSERT INTO `reservation_room` (`reservation_id`, `room_id`, `checkin_date`, `checkout_date`) VALUES
 (4, 19, '2018-11-12', '2018-12-12'),
 (4, 29, '2018-11-12', '2018-12-12'),
-(14, 19, '2018-12-21', '2019-01-12'),
-(15, 21, '2018-11-21', '2019-11-25'),
-(16, 22, '2018-11-21', '2019-11-25');
+(14, 19, '2018-11-07', '2018-11-22'),
+(14, 20, '2018-11-07', '2018-11-22'),
+(14, 21, '2018-11-07', '2018-11-22'),
+(17, 41, '2018-11-23', '2018-11-24'),
+(18, 19, '2018-09-18', '2018-09-19'),
+(19, 19, '2018-08-07', '2018-08-08'),
+(20, 35, '2017-09-18', '2017-09-19'),
+(21, 53, '2016-11-07', '2016-11-22'),
+(22, 55, '2015-01-01', '2015-01-03'),
+(23, 60, '2015-05-01', '2015-06-01');
 
 -- --------------------------------------------------------
 
@@ -345,6 +400,17 @@ INSERT INTO `room` (`id`, `hotel_id`, `room_type_id`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `rooms_per_reservation`
+-- (See below for the actual view)
+--
+CREATE TABLE `rooms_per_reservation` (
+`reservation_id` int(11)
+,`numberOfRooms` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `room_type`
 --
 
@@ -376,6 +442,33 @@ INSERT INTO `room_type` (`id`, `type_name`, `occupancy`, `description`, `price`,
 (46, 'Deluxe King Room', 2, NULL, 400, 2),
 (47, 'Regular Double Bed Room', 2, NULL, 100, 1),
 (48, 'Standard Queen Room', 2, NULL, 400, 5);
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `reservations_per_hotel`
+--
+DROP TABLE IF EXISTS `reservations_per_hotel`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `reservations_per_hotel`  AS  select `h`.`id` AS `hotel_id`,count(distinct `rv`.`reservation_id`) AS `result` from ((`reservation_room` `rv` join `room` `r`) join `hotel` `h`) where ((`rv`.`room_id` = `r`.`id`) and (`r`.`hotel_id` = `h`.`id`)) group by `h`.`id` ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `reservation_hotel`
+--
+DROP TABLE IF EXISTS `reservation_hotel`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `reservation_hotel`  AS  select `rv`.`reservation_id` AS `reservation_id`,`h`.`id` AS `hotel_id` from ((`reservation_room` `rv` join `room` `r`) join `hotel` `h`) where ((`rv`.`room_id` = `r`.`id`) and (`r`.`hotel_id` = `h`.`id`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `rooms_per_reservation`
+--
+DROP TABLE IF EXISTS `rooms_per_reservation`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `rooms_per_reservation`  AS  select `reservation_room`.`reservation_id` AS `reservation_id`,count(0) AS `numberOfRooms` from `reservation_room` group by `reservation_room`.`reservation_id` ;
 
 --
 -- Indexes for dumped tables
@@ -410,7 +503,7 @@ ALTER TABLE `coupon`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`),
   ADD KEY `username` (`username`),
-  ADD KEY `type_id` (`type_id`),
+  ADD KEY `type_id` (`coupon_type_id`),
   ADD KEY `hotel_id` (`hotel_id`);
 
 --
@@ -421,9 +514,9 @@ ALTER TABLE `coupon_type`
   ADD UNIQUE KEY `id` (`id`);
 
 --
--- Indexes for table `customers`
+-- Indexes for table `customer`
 --
-ALTER TABLE `customers`
+ALTER TABLE `customer`
   ADD PRIMARY KEY (`username`),
   ADD UNIQUE KEY `username` (`username`),
   ADD UNIQUE KEY `email` (`email`),
@@ -506,13 +599,13 @@ ALTER TABLE `address`
 -- AUTO_INCREMENT for table `coupon`
 --
 ALTER TABLE `coupon`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `coupon_type`
 --
 ALTER TABLE `coupon_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `hotel`
@@ -524,13 +617,13 @@ ALTER TABLE `hotel`
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `reservation`
 --
 ALTER TABLE `reservation`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `review`
@@ -558,20 +651,20 @@ ALTER TABLE `room_type`
 -- Constraints for table `card`
 --
 ALTER TABLE `card`
-  ADD CONSTRAINT `card_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customers` (`username`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `card_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customer` (`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `coupon`
 --
 ALTER TABLE `coupon`
-  ADD CONSTRAINT `coupon_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customers` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `coupon_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `coupon_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `coupon_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customer` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `coupon_ibfk_2` FOREIGN KEY (`coupon_type_id`) REFERENCES `coupon_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `coupon_ibfk_3` FOREIGN KEY (`hotel_id`) REFERENCES `hotel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `customers`
+-- Constraints for table `customer`
 --
-ALTER TABLE `customers`
+ALTER TABLE `customer`
   ADD CONSTRAINT `address_foreign_key` FOREIGN KEY (`address_id`) REFERENCES `address` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
@@ -590,13 +683,14 @@ ALTER TABLE `hotel_tag`
 -- Constraints for table `payment`
 --
 ALTER TABLE `payment`
-  ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`coupon_id`) REFERENCES `coupon` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`card_number`) REFERENCES `card` (`card_number`);
 
 --
 -- Constraints for table `reservation`
 --
 ALTER TABLE `reservation`
-  ADD CONSTRAINT `reservation_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customers` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `reservation_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customer` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `reservation_ibfk_2` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
@@ -610,7 +704,7 @@ ALTER TABLE `reservation_room`
 -- Constraints for table `review`
 --
 ALTER TABLE `review`
-  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customers` (`username`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`username`) REFERENCES `customer` (`username`) ON UPDATE CASCADE,
   ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`hotel_id`) REFERENCES `hotel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --

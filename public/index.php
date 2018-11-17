@@ -38,6 +38,6 @@ require '../src/routes/roomTypes.php';
 require '../src/routes/reservations.php';
 require '../src/routes/cards.php';
 require '../src/routes/payments.php';
-
+require '../src/routes/stats.php';
 
 $app->run();

@@ -44,11 +44,22 @@ $app->post('/api/payments/reservation/{id}', function (Request $request, Respons
 
     $paymentInsertQuery = "INSERT INTO payment (amount, coupon_id, card_number) VALUES (:amount, :coupon_id, :card_number)";
     $associateReservationQuery = "UPDATE reservation SET payment_id = :payment_id WHERE id = :id";
+    $updateCoupon = "UPDATE coupon SET is_used = 1 WHERE id = :coupon_id";
+    $getCustomer = "SELECT * FROM customer, card WHERE card.card_number = :card_number AND card.username = customer.username";
+    $updatePoints = "UPDATE customer SET points = points + :amount WHERE username = :username";
+
     $db = new db();
     $db = $db->connect();
 
 
     try {
+        $stmt = $db->prepare($getCustomer);
+
+        $stmt->bindParam('card_number', $parsedBody['card_number']);
+        $stmt->execute();
+
+        $customer = $stmt->fetch(PDO::FETCH_OBJ);
+
         $stmt = $db->prepare($paymentInsertQuery);
 
         $stmt->bindParam('amount', $parsedBody['amount']);
@@ -57,6 +68,19 @@ $app->post('/api/payments/reservation/{id}', function (Request $request, Respons
 
         if ($stmt->execute()) {
             $paymentId = $db->lastInsertId();
+
+            $stmt = $db->prepare($updatePoints);
+
+            $stmt->bindParam('amount', $parsedBody['amount']);
+            $stmt->bindParam('username', $customer->username);
+
+            $stmt->execute();
+
+            $stmt = $db->prepare($updateCoupon);
+
+            $stmt->bindParam('coupon_id', $parsedBody['coupon_id']);
+
+            $stmt->execute();
 
             $stmt = $db->prepare($associateReservationQuery);
 
