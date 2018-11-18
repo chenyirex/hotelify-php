@@ -232,7 +232,7 @@ $app->get('/api/stats/hotel/{hotel_id}/revenue', function (Request $request, Res
                     FROM
                         reservation_hotel
                     WHERE
-                        hotel_id = 1
+                        hotel_id = :hotel_id
                     GROUP BY
                         reservation_id,
                         hotel_id
@@ -245,7 +245,7 @@ $app->get('/api/stats/hotel/{hotel_id}/revenue', function (Request $request, Res
     $db = new db();
     $db = $db->connect();
     try {
-        $stmt = $db->query($query);
+        $stmt = $db->prepare($query);
         $stmt->bindParam('hotel_id', $hotel_id);
         $stmt->execute();
 
