@@ -193,13 +193,13 @@ $app->get('/api/hotels/{id}', function (Request $request, Response $response, ar
     }
 });
 
-// Get All hotels
+// Get All hotels order by branch name
 $app->get('/api/hotels', function (Request $request, Response $response) {
 
     $hotel_columns = $GLOBALS['hotel_columns'];
     $address_columns = $GLOBALS['address_columns'];
 
-    $query = "SELECT $hotel_columns,$address_columns FROM hotel h INNER JOIN address a ON h.address_id = a.id";
+    $query = "SELECT $hotel_columns,$address_columns FROM hotel h INNER JOIN address a ON h.address_id = a.id ORDER BY h.branch_name";
 
     try {
         $db = new db();
