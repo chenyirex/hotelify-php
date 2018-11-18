@@ -188,7 +188,7 @@ $app->get('/api/stats/hotel-room-count', function (Request $request, Response $r
 });
 /**
  * Total revenue that hotelify brings to all hotels
- * response: h{
+ * response: {
  * "result": "850"
  * }
  */
@@ -205,6 +205,54 @@ $app->get('/api/stats/revenue', function (Request $request, Response $response) 
 
         $result = $stmt->fetch(PDO::FETCH_OBJ);
         $db = null;
+        $response->write(json_encode($result));
+        return $response->withStatus(200);
+    } catch (PDOException $e) {
+        $db = null;
+        $errorMessage = $e->getMessage();
+        return $response->write(json_encode(['error' => $errorMessage]))->withStatus(500);
+    }
+});
+/**
+ * Total revenue that hotelify brings to a hotel
+ * response: {
+ * "result": "850"
+ * }
+ */
+$app->get('/api/stats/hotel/{hotel_id}/revenue', function (Request $request, Response $response, array $args) {
+
+    $hotel_id = $args['hotel_id'];
+
+    $query = "  SELECT
+                    SUM(p.amount) AS result
+                FROM
+                    (
+                    SELECT
+                        reservation_id
+                    FROM
+                        reservation_hotel
+                    WHERE
+                        hotel_id = 1
+                    GROUP BY
+                        reservation_id,
+                        hotel_id
+                ) AS rid,
+                reservation r,
+                payment p
+                WHERE
+                    rid.reservation_id = r.id AND r.payment_id IS NOT NULL AND p.id = r.payment_id";
+
+    $db = new db();
+    $db = $db->connect();
+    try {
+        $stmt = $db->query($query);
+        $stmt->bindParam('hotel_id', $hotel_id);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+
+        $db = null;
+
         $response->write(json_encode($result));
         return $response->withStatus(200);
     } catch (PDOException $e) {
