@@ -95,8 +95,8 @@ $app->post('/api/customers/signup', function (Request $request, Response $respon
     $username = $request->getParam('username');
     $password = $request->getParam('password');
     $email = $request->getParam('email');
-    $phone = $request->getParam('phone');
-    $sql = "INSERT INTO customer(first_name, last_name, username, password, email, phone, points) VALUES (:first_name, :last_name, :username, :password, :email, :phone, 0)";
+    $phone_number = $request->getParam('phone_number');
+    $sql = "INSERT INTO customer(first_name, last_name, username, password, email, phone_number, points) VALUES (:first_name, :last_name, :username, :password, :email, :phone_number, 0)";
     // prepare query
 
     try {
@@ -110,7 +110,7 @@ $app->post('/api/customers/signup', function (Request $request, Response $respon
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':password', $password);
         $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':phone', $phone);
+        $stmt->bindParam(':phone_number', $phone_number);
         if ($stmt->execute()) {
             $db = null;
             $responseArray = array();
@@ -133,11 +133,11 @@ $app->put('/api/customers/update', function (Request $request, Response $respons
     $username = $request->getParam('username');
     $password = $request->getParam('password');
     $email = $request->getParam('email');
-    $phone = $request->getParam('phone');
+    $phone_number = $request->getParam('phone_number');
     $address_id = $request->getParam('address_id');
     $points = $request->getParam('points');
     $sql = "UPDATE customer
-         SET first_name = :first_name, last_name = :last_name,  password = :password, phone = :phone,
+         SET first_name = :first_name, last_name = :last_name,  password = :password, phone_number = :phone_number,
               email = :email, address_id = :address_id, points = :points
          WHERE username = :username";
     try {
@@ -149,7 +149,7 @@ $app->put('/api/customers/update', function (Request $request, Response $respons
         $stmt->bindParam(':first_name', $first_name);
         $stmt->bindParam(':last_name', $last_name);
         $stmt->bindParam(':password', $password);
-        $stmt->bindParam(':phone', $phone);
+        $stmt->bindParam(':phone_number', $phone_number);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':points', $points);
         $stmt->bindParam(':address_id', $address_id);
