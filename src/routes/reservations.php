@@ -72,7 +72,8 @@ $app->post('/api/reservations/create', function (Request $request, Response $res
     $reservationQuery = "INSERT INTO reservation (username) VALUES (:username)";
     $reservationRoomQuery = "INSERT INTO reservation_room (reservation_id, checkin_date,checkout_date,room_id) 
                             VALUES (:reservation_id,:checkin_date,:checkout_date,:room_id)";
-    $getHotelQuery = "SELECT * FROM reservation_hotel rh, hotel h WHERE rh.hotel_id = h.id AND rh.reservation_id = :id";
+    $getReservationInfoQuery = "SELECT * FROM reservation_hotel rh, hotel h, customer c, reservation r
+                      WHERE rh.hotel_id = h.id AND rh.reservation_id = :id AND r.id = rh.reservation_id AND c.username = r.username";
 
     $db = new db();
     $db = $db->connect();
@@ -103,11 +104,11 @@ $app->post('/api/reservations/create', function (Request $request, Response $res
 
             $db->commit();
 
-            $stmt = $db->prepare($getHotelQuery);
+            $stmt = $db->prepare($getReservationInfoQuery);
             $stmt->bindParam('id', $id);
             $stmt->execute();
 
-            $hotel = $stmt->fetch(PDO::FETCH_OBJ);
+            $reservationInfo = $stmt->fetch(PDO::FETCH_OBJ);
 
             $db = null;
 
@@ -116,10 +117,10 @@ $app->post('/api/reservations/create', function (Request $request, Response $res
             $twilio = new Client($sid, $token);
 
             $twilio->messages
-                ->create("+17789911125", // to
+                ->create("+1$reservationInfo->phone_number", // to
                     array(
                         "from" => "+13433003206",
-                        "body" => "Hi $username, Thank you for using Hotelify to book your hotel! Your reservation at $hotel->brand_name has been accepted. Check-in date is $checkin_date, check-out date is $checkout_date.")
+                        "body" => "Hi $username, Thank you for using Hotelify to book your hotel! Your reservation at $reservationInfo->brand_name has been accepted. Check-in date is $checkin_date, check-out date is $checkout_date.")
                 );
 
             $responseArray = array();
