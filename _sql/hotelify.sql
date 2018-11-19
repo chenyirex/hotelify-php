@@ -2,8 +2,8 @@
 -- version 4.8.3
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Nov 17, 2018 at 11:50 PM
+-- Host: 127.0.0.1
+-- Generation Time: Nov 19, 2018 at 12:56 AM
 -- Server version: 10.1.36-MariaDB
 -- PHP Version: 7.2.11
 
@@ -42,13 +42,15 @@ CREATE TABLE `address` (
 --
 
 INSERT INTO `address` (`id`, `country`, `province`, `city`, `street`, `postal_code`) VALUES
-(1, 'Canada', 'BC', 'Vancouver', '791 W Georgia St', 'V6C 2T4'),
+(1, 'Canada', 'BC', 'Vancouver', '791 W Georgia St', 'V6T 1Z2'),
 (2, 'United States', 'CA', 'Irvine', '123 any street', '92602'),
 (3, 'Canada', 'BC', 'Vancouver', '5959 Student Union Blvd', 'V6T 1K2'),
 (4, 'Canada', 'BC', 'Richmond', '3111 Grant McConachie Way', 'V6C 2T4'),
 (6, 'Canada', 'BC', 'Vancouver', '475 Howe Street', 'V6B 2B3'),
 (7, 'Canada', 'ON', 'Toronto', '33 Gerrard Street West', 'M5G 1Z4'),
-(8, 'Canada', 'BC', 'Vancouver', '900 W Georgia St', 'V6C 2W6');
+(8, 'Canada', 'BC', 'Vancouver', '900 W Georgia St', 'V6C 2W6'),
+(9, 'US', 'WA', 'Seattle', '1112 4th Ave', '98101'),
+(10, 'Canada', 'BC', 'Vancouver', '711 W. Broadway @ Heather Street', 'V5Z 3Y2');
 
 -- --------------------------------------------------------
 
@@ -89,7 +91,16 @@ CREATE TABLE `card` (
 --
 
 INSERT INTO `card` (`card_number`, `card_holder_name`, `csv`, `expire_date`, `username`) VALUES
-('8888888888888888', 'yi', '345', '2019-09-09', 'rex');
+('1234432112344321', 'Kanglong Qiu', '111', '2022-02-01', 'qkl'),
+('2345432123454321', 'Chen Yi', '888', '2022-10-01', 'rex'),
+('2345678998765432', 'Haus Tang', '777', '2019-09-01', 'Suiyobi'),
+('4563456378900987', 'Yuxiang Huang', '336', '2019-08-01', 'Daniel God'),
+('4567765412344321', 'Tang Ao', '666', '2019-07-01', 'rex'),
+('5643564356435643', 'Scott Wang', '711', '2019-09-01', 'Scott'),
+('7777888899990000', 'Haus Tang', '888', '2020-04-01', 'Suiyobi'),
+('8888888888888888', 'Rex Chen', '345', '2019-09-09', 'rex'),
+('9911991199119911', 'Scott Wang', '888', '2022-11-01', 'Scott'),
+('9999888877776666', 'Haus Tang', '333', '2022-04-01', 'Suiyobi');
 
 -- --------------------------------------------------------
 
@@ -112,7 +123,20 @@ CREATE TABLE `coupon` (
 
 INSERT INTO `coupon` (`id`, `username`, `coupon_type_id`, `hotel_id`, `expire_date`, `is_used`) VALUES
 (1, 'rex', 1, 1, '2019-09-09', 1),
-(4, 'qkl', 3, 1, '2020-01-01', 0);
+(4, 'qkl', 3, 1, '2020-01-01', 0),
+(5, 'rex', 3, 2, '2018-11-27', 0),
+(6, 'Scott', 3, 1, '2020-01-01', 1),
+(7, 'scott', 6, 1, '2018-11-29', 0),
+(8, 'scott', 7, 1, '2018-11-29', 0),
+(9, 'suiyobi', 7, 1, '2018-11-29', 0),
+(10, 'suiyobi', 3, 1, '2018-11-29', 0),
+(11, 'rex', 3, 1, '2018-11-29', 0),
+(12, 'Daniel God', 3, 1, '2020-01-01', 0),
+(13, 'qkl', 2, 7, '2019-01-16', 0),
+(14, 'rex', 2, 7, '2019-01-16', 0),
+(15, 'Scott', 2, 7, '2019-01-16', 0),
+(16, 'suiyobi', 2, 7, '2019-01-16', 0),
+(17, 'Daniel God', 2, 7, '2019-01-16', 0);
 
 -- --------------------------------------------------------
 
@@ -134,7 +158,9 @@ CREATE TABLE `coupon_type` (
 INSERT INTO `coupon_type` (`id`, `value`, `discount_type`, `points_cost`) VALUES
 (1, 30, '%', 1500),
 (2, 100, '$', 500),
-(3, 10, '%', 0);
+(3, 10, '%', 0),
+(6, 50, '$', 300),
+(7, 20, '%', 1100);
 
 -- --------------------------------------------------------
 
@@ -158,15 +184,17 @@ CREATE TABLE `customer` (
 --
 
 INSERT INTO `customer` (`first_name`, `last_name`, `username`, `password`, `email`, `phone_number`, `address_id`, `points`) VALUES
-('Kanglong', 'Qiu', 'qkl', 'qkl', 'qkl@gmail.com', '7788888888', 1, 100),
-('rex', 'chen', 'rex', 'rex', 'rex@gmail.com', '7789919999', 1, 350),
-('ao', 'tang', 'suiyobi', '123', '123', '', 2, 0);
+('Daniel', 'Huang', 'Daniel God', '123', 'fake@gmail.com', '7786810109', 7, 0),
+('Kanglong', 'Qiu', 'qkl', 'qkl', 'qkl@gmail.com', '7786810868', 1, 1750),
+('rex', 'chen', 'rex', 'rex', 'rex@gmail.com', '7789911125', 1, 1050),
+('jingrui', 'wang', 'Scott', '666', 'wjr@gmail.com', '7786814260', 2, 9520),
+('ao', 'tang', 'suiyobi', '123', '123@qq.com', '6047158011', 2, 880);
 
 --
 -- Triggers `customer`
 --
 DELIMITER $$
-CREATE TRIGGER `New User Coupon event(UBC)` AFTER INSERT ON `customer` FOR EACH ROW INSERT INTO coupon VALUES(null,NEW.username, 3, 1, '2020-01-01')
+CREATE TRIGGER `New User Coupon event(UBC)` AFTER INSERT ON `customer` FOR EACH ROW INSERT INTO coupon VALUES(null,NEW.username, 3, 1, '2020-01-01',0)
 $$
 DELIMITER ;
 
@@ -192,12 +220,14 @@ CREATE TABLE `hotel` (
 --
 
 INSERT INTO `hotel` (`id`, `brand_name`, `branch_name`, `property_class`, `address_id`, `description`, `overall_rating`, `phone_number`) VALUES
-(1, 'Walter Gage', 'UBC', 3, 3, 'Walter Gage is known for its positive energy and superb location. Three high-rise towers are conveniently located near the The Nest, bus loop, and many campus recreational facilities.', 'good', '6048221020'),
-(2, 'Fairmont', 'Vancouver Airport', 4, 4, 'Set within the Vancouver International Airport, this upscale hotel is 1 km from YVR-Airport Station train station and 9 km from VanDusen Botanical Garden.', NULL, '8008208820'),
-(4, 'Exchange Hotel', 'Vancouver', 4, 6, 'Situated within 200 metres of Waterfront Centre Mall Vancouver and Vancouver Lookout at Harbour Centre, EXchange Hotel Vancouver features rooms with air conditioning. Free WiFi is available.', NULL, '6047190900'),
+(1, 'Walter Gage', 'UBC', 3, 3, 'Walter Gage is known for its positive energy and superb location. Three high-rise towers are conveniently located near the The Nest, bus loop, and many campus recreational facilities.', NULL, '6048221000'),
+(2, 'Fairmont', 'Vancouver Airport', 4, 4, 'Set within the Vancouver International Airport, this upscale hotel is 1 km from YVR-Airport Station train station and 9 km from VanDusen Botanical Garden.', NULL, '6042075200'),
+(4, 'Exchange Hotel', 'Vancouver', 4, 6, 'Situated within 200 metres of Waterfront Centre Mall Vancouver and Vancouver Lookout at Harbour Centre, EXchange Hotel Vancouver features rooms with air conditioning. Free WiFi is available.', NULL, '6045634693'),
 (5, 'Four Seasons', 'Vancouver', 5, 1, 'Modern rooms & plush suites with skyline views, plus an indoor/outdoor pool & a seafood restaurant.', NULL, '6046899333'),
-(6, 'Chelsea Hotel', 'Toronto', 3, 7, NULL, NULL, NULL),
-(7, 'Fairmont', 'Vancouver Downtown', 4, 8, 'A 2-minute walk from the Vancouver Art Gallery and a 4-minute walk from Vancouver City Centre Station, this elegant hotel dating from 1939 is a 10-minute walk from the Canada Place convention centre.', NULL, '6046843131');
+(6, 'Chelsea Hotel', 'Toronto', 3, 7, 'World class attractions, beaches and shopping hubs are only minutes away and the hotel is located two blocks from the Broadway-City Hall Skytrain Station which offers easy and convenient access to downtown Vancouver and Vancouver International Airport (YV', NULL, '4165951975'),
+(7, 'Fairmont', 'Vancouver Downtown', 4, 8, 'A 2-minute walk from the Vancouver Art Gallery and a 4-minute walk from Vancouver City Centre Station, this elegant hotel dating from 1939 is a 10-minute walk from the Canada Place convention centre.', NULL, '6046843131'),
+(8, 'W', 'Seattle', 4, 9, 'Experience all the excitement of Seattle city centre at this centrally located hotel, only seconds from major area attractions, and offering unrivaled personalized services along with first-class amenities and luxurious accommodations.', NULL, '2062646000'),
+(9, 'Holiday Inn', 'Broadway', 3, 10, 'A 6-minute walk from the Broadway-City Hall Skytrain station (which offers direct access to downtown Vancouver), this contemporary hotel is also 2.3 km from Granville Island.', NULL, '6048790511');
 
 -- --------------------------------------------------------
 
@@ -216,8 +246,26 @@ CREATE TABLE `hotel_tag` (
 --
 
 INSERT INTO `hotel_tag` (`hotel_id`, `tag_name`, `popularity`) VALUES
-(1, 'cheap', 3),
-(1, 'clean', 7);
+(1, 'cheap', 4),
+(1, 'clean', 7),
+(1, 'quiet', 1),
+(2, 'Clean', 2),
+(2, 'Convenient', 1),
+(2, 'good service', 1),
+(4, 'clean', 2),
+(4, 'noisy', 1),
+(5, 'Clean', 3),
+(5, 'Close to Downtown', 3),
+(5, 'Noisy', 1),
+(6, 'Close to Downtown', 2),
+(6, 'Noisy', 1),
+(7, 'Clean', 1),
+(7, 'Close to Downtown', 2),
+(8, 'Clean', 1),
+(8, 'Close to downtown', 3),
+(8, 'Free wifi', 1),
+(9, 'Clean', 2),
+(9, 'Good service', 1);
 
 -- --------------------------------------------------------
 
@@ -238,7 +286,23 @@ CREATE TABLE `payment` (
 
 INSERT INTO `payment` (`id`, `amount`, `coupon_id`, `card_number`) VALUES
 (7, 500, NULL, '8888888888888888'),
-(18, 350, 1, '8888888888888888');
+(18, 350, 1, '8888888888888888'),
+(19, 150, NULL, '1234432112344321'),
+(20, 700, NULL, '1234432112344321'),
+(21, 6000, NULL, '5643564356435643'),
+(22, 270, 6, '5643564356435643'),
+(23, 380, NULL, '2345678998765432'),
+(24, 250, NULL, '1234432112344321'),
+(25, 100, NULL, '1234432112344321'),
+(26, 300, NULL, '1234432112344321'),
+(27, 150, NULL, '1234432112344321'),
+(28, 300, NULL, '4567765412344321'),
+(29, 400, NULL, '4567765412344321'),
+(30, 150, NULL, '5643564356435643'),
+(31, 800, NULL, '9911991199119911'),
+(32, 1800, NULL, '9911991199119911'),
+(33, 500, NULL, '5643564356435643'),
+(34, 500, NULL, '7777888899990000');
 
 -- --------------------------------------------------------
 
@@ -261,11 +325,33 @@ INSERT INTO `reservation` (`id`, `username`, `payment_id`) VALUES
 (14, 'rex', 18),
 (17, 'suiyobi', NULL),
 (18, 'suiyobi', NULL),
-(19, 'qkl', NULL),
+(19, 'qkl', 25),
 (20, 'suiyobi', NULL),
 (21, 'suiyobi', NULL),
-(22, 'suiyobi', NULL),
-(23, 'suiyobi', NULL);
+(22, 'suiyobi', 23),
+(23, 'suiyobi', NULL),
+(24, 'qkl', 19),
+(25, 'qkl', 20),
+(26, 'Scott', 21),
+(27, 'Scott', 22),
+(28, 'qkl', NULL),
+(29, 'qkl', NULL),
+(30, 'rex', NULL),
+(31, 'qkl', NULL),
+(32, 'qkl', NULL),
+(33, 'rex', NULL),
+(34, 'qkl', 24),
+(35, 'qkl', NULL),
+(36, 'qkl', 26),
+(37, 'qkl', 27),
+(38, 'rex', 28),
+(39, 'rex', 29),
+(40, 'Scott', 30),
+(41, 'Scott', 31),
+(42, 'Scott', 32),
+(43, 'Scott', 33),
+(44, 'Suiyobi', 34),
+(45, 'qkl', NULL);
 
 -- --------------------------------------------------------
 
@@ -318,7 +404,33 @@ INSERT INTO `reservation_room` (`reservation_id`, `room_id`, `checkin_date`, `ch
 (20, 35, '2017-09-18', '2017-09-19'),
 (21, 53, '2016-11-07', '2016-11-22'),
 (22, 55, '2015-01-01', '2015-01-03'),
-(23, 60, '2015-05-01', '2015-06-01');
+(23, 60, '2015-05-01', '2015-06-01'),
+(24, 46, '2018-11-27', '2018-11-28'),
+(25, 42, '2018-11-02', '2018-11-03'),
+(26, 65, '2019-01-03', '2019-01-09'),
+(26, 66, '2019-01-03', '2019-01-09'),
+(27, 22, '2018-11-24', '2018-11-25'),
+(28, 67, '2018-11-24', '2018-11-25'),
+(29, 30, '2018-11-24', '2018-11-25'),
+(30, 25, '2018-11-24', '2018-11-25'),
+(31, 20, '2018-11-23', '2018-11-24'),
+(32, 23, '2018-11-21', '2018-11-22'),
+(32, 26, '2018-11-21', '2018-11-22'),
+(32, 31, '2018-11-21', '2018-11-22'),
+(33, 64, '2018-11-29', '2018-11-30'),
+(34, 72, '2018-11-23', '2018-11-24'),
+(35, 32, '2018-11-01', '2018-11-02'),
+(36, 37, '2018-11-07', '2018-11-08'),
+(37, 53, '2018-11-06', '2018-11-07'),
+(38, 37, '2018-11-08', '2018-11-09'),
+(39, 59, '2018-10-31', '2018-11-01'),
+(40, 53, '2018-11-10', '2018-11-11'),
+(41, 59, '2018-11-13', '2018-11-15'),
+(42, 77, '2018-11-13', '2018-11-15'),
+(42, 82, '2018-11-13', '2018-11-15'),
+(43, 73, '2018-11-13', '2018-11-15'),
+(44, 82, '2018-11-15', '2018-11-16'),
+(45, 83, '2018-11-15', '2018-11-16');
 
 -- --------------------------------------------------------
 
@@ -333,6 +445,30 @@ CREATE TABLE `review` (
   `rating` double NOT NULL,
   `comment` char(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `review`
+--
+
+INSERT INTO `review` (`id`, `hotel_id`, `username`, `rating`, `comment`) VALUES
+(1, 6, 'qkl', 5, 'Very good! The hotel is close to downtown, and the room is clean!'),
+(2, 6, 'qkl', 3, 'The hotel is noisy and there are too many people.'),
+(3, 5, 'suiyobi', 5, 'Tremendous! Close to Downtown'),
+(4, 5, 'suiyobi', 4, 'Good, but too expensive.'),
+(5, 5, 'suiyobi', 5, 'Good and worth it!'),
+(6, 1, 'qkl', 4, 'Clean and close to UBC. Good view!'),
+(7, 2, 'qkl', 5, 'Close to the airport, you can see the plane.'),
+(8, 1, 'qkl', 4, 'Clean and quiet.'),
+(9, 4, 'qkl', 4, 'Close to downtown'),
+(10, 2, 'rex', 5, 'Nice room and good service!'),
+(11, 7, 'rex', 5, 'Good location, close to tourist attractions.'),
+(12, 4, 'Scott', 5, 'Good service and delicious breakfast.'),
+(13, 7, 'Scott', 4, 'Fantastic service and even a gift for our honeymoon'),
+(14, 9, 'Scott', 4, 'Close to skytrain station.'),
+(15, 9, 'Scott', 5, 'My stay was excellent from clean room to staff.'),
+(16, 8, 'Scott', 5, 'The location is convenient to downtown. There are many restaurants within walking distance.'),
+(17, 8, 'Suiyobi', 5, 'Super friendly staff, beautiful and clean room and perfect location in downtown Seattle'),
+(18, 8, 'Suiyobi', 4, 'Nothing special, rooms are average.');
 
 -- --------------------------------------------------------
 
@@ -388,14 +524,44 @@ INSERT INTO `room` (`id`, `hotel_id`, `room_type_id`) VALUES
 (53, 4, 44),
 (54, 4, 44),
 (55, 5, 45),
-(56, 5, 46),
-(57, 5, 46),
-(58, 5, 47),
 (59, 7, 48),
 (60, 7, 48),
 (61, 7, 48),
 (62, 7, 48),
-(63, 7, 48);
+(63, 7, 48),
+(64, 5, 49),
+(65, 8, 51),
+(66, 8, 51),
+(67, 8, 51),
+(68, 8, 51),
+(69, 8, 51),
+(70, 9, 52),
+(71, 9, 52),
+(72, 9, 53),
+(73, 9, 53),
+(74, 9, 53),
+(75, 9, 53),
+(76, 9, 53),
+(77, 8, 54),
+(78, 8, 54),
+(79, 8, 54),
+(80, 8, 54),
+(81, 8, 54),
+(82, 8, 55),
+(83, 8, 55),
+(84, 8, 55),
+(85, 8, 55),
+(86, 8, 55),
+(87, 7, 56),
+(88, 7, 56),
+(89, 7, 56),
+(90, 7, 56),
+(91, 7, 56),
+(92, 7, 56),
+(93, 7, 56),
+(94, 7, 56),
+(95, 7, 56),
+(96, 7, 56);
 
 -- --------------------------------------------------------
 
@@ -434,14 +600,20 @@ INSERT INTO `room_type` (`id`, `type_name`, `occupancy`, `description`, `price`,
 (38, 'Standard King Room', 5, 'this room is for kanglong', 300, 3),
 (39, 'Deluxe President Suite', 5, 'For Hotelify developers only', 1000, 1),
 (40, 'Deluxe King Room', 2, 'Deluxe King', 800, 2),
-(41, 'Deluxe Queen Room', 2, NULL, 700, 2),
-(42, 'Standard Queen Room', 2, NULL, 150, 5),
-(43, 'Standard Double Room', 4, NULL, 300, 2),
+(41, 'Deluxe Queen Room', 2, 'Deluxe Queen', 700, 2),
+(42, 'Standard Queen Room', 2, 'Standard Queen', 150, 5),
+(43, 'Standard Double Room', 4, 'Standard double', 300, 2),
 (44, 'Deluxe Queen Room', 2, 'Great views', 150, 2),
 (45, 'Deluxe Queen Room', 2, 'Great views', 190, 1),
-(46, 'Deluxe King Room', 2, NULL, 400, 2),
-(47, 'Regular Double Bed Room', 2, NULL, 100, 1),
-(48, 'Standard Queen Room', 2, NULL, 400, 5);
+(48, 'Standard Queen Room', 2, 'Standard Queen', 400, 5),
+(49, 'Deluxe King Room', 2, 'Room with great city view', 700, 1),
+(50, 'Regular Double Bed Room', 2, 'Extra beds available', 400, 0),
+(51, 'City View King Room', 2, 'Luxury room with great city view of Downtown Seattle', 500, 5),
+(52, 'City View Queen Room', 2, 'Big room with fantastic view', 400, 2),
+(53, 'City View Single Room', 1, 'One-bed room with city view', 250, 5),
+(54, 'Cozy Room', 2, 'One King Bed', 400, 5),
+(55, 'Wonderful Room', 2, 'One king bed with view', 500, 5),
+(56, 'Standard King Room', 2, 'Standard King', 450, 10);
 
 -- --------------------------------------------------------
 
@@ -593,55 +765,55 @@ ALTER TABLE `room_type`
 -- AUTO_INCREMENT for table `address`
 --
 ALTER TABLE `address`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `coupon`
 --
 ALTER TABLE `coupon`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `coupon_type`
 --
 ALTER TABLE `coupon_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `hotel`
 --
 ALTER TABLE `hotel`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `reservation`
 --
 ALTER TABLE `reservation`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `review`
 --
 ALTER TABLE `review`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `room`
 --
 ALTER TABLE `room`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `room_type`
 --
 ALTER TABLE `room_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- Constraints for dumped tables
