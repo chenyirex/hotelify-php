@@ -1,7 +1,7 @@
 # Hotelify-php
-Hotelify is a hotel booking platform that allows not only users to have the best booking experiences but also hotel managers to mange their hotel better.
+Hotelify is a hotel booking platform that provides not only customers the best booking experiences but also hotel managers the ability to see their business grows.
 
-Hotelify-php is the Back-end of the Hotelify, which uses the Slim3 as the framework.
+Hotelify backend is written in PHP with Slim3.
 
 ### How to Run it
 * Make sure you have installed [php](http://php.net/downloads.php), [phpMyAdmin](https://www.phpmyadmin.net/) (You could use [XAMPP](https://www.apachefriends.org/index.html) which integrates all the cool stuffs for you!)
